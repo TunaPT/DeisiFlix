@@ -1,20 +1,41 @@
-package pt.ulusofona.deisi.aed.deisiflix.pt.ulusofona.deisi.aed.deisiflix;
+package pt.ulusofona.deisi.aed.deisiflix;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
 public class Main {
-    static void lerFicheiros() throws IOException {}
-    static ArrayList<Filme> getFilmes() { return null; }
-    static ArrayList<String> getLinhasIgnoradas(String fileName) { return null; }
+    static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
+    static ArrayList<String> linhasIgnoradas = new ArrayList<String>();
+    static ArrayList<String> deisiPeople = new ArrayList<String>();
+    static ArrayList<String> deisiGenres = new ArrayList<String>();
+    static ArrayList<String> deisiMovieVotes = new ArrayList<String>();
+    static void lerFicheiros() throws IOException {
+        MoviesValid moviesValid = scan3();
+        linhasVálidas = moviesValid.listaFilmes;
+        linhasIgnoradas = moviesValid.linhasIgnoradas;
+        deisiPeople = scan0();
+        deisiGenres = scan1();
+        deisiMovieVotes = scan2();
+    }
+    static ArrayList<Filme> getFilmes() { return linhasVálidas; }
 
-    public static void main(String[] args) throws IOException {
-        scan0();
-        scan1();
-        scan2();
-        scan3();
+    static ArrayList<String> getLinhasIgnoradas(String fileName) throws IOException {
+        if (fileName == "deisi_people.txt") {
+            return deisiPeople;
+        } else if (fileName == "deisi_genres.txt") {
+            return deisiGenres;
+        } else if (fileName == "deisi_movie_votes.txt") {
+            return deisiMovieVotes;
+        } else if (fileName == "deisi_movies.txt") {
+            return linhasIgnoradas;
+        } else {
+            return null;
+        }
     }
 
+    public static void main(String[] args) throws IOException {
+        lerFicheiros();
+    }
     //deisi_people
     public static ArrayList<String> scan0() throws IOException {
         String nomeFicheiro = "deisi_people.txt";
@@ -94,14 +115,14 @@ public class Main {
         leitorFicheiro.close();
         return linhasIgnoradas;
     }
-
     //deisi_movies
-    public static ArrayList<String> scan3() throws IOException {
+    public static MoviesValid scan3() throws IOException {
         String nomeFicheiro = "deisi_movies.txt";
         File ficheiro = new File(nomeFicheiro);
         FileInputStream fis = new FileInputStream(ficheiro);
         Scanner leitorFicheiro = new Scanner(fis);
         ArrayList<String> linhasIgnoradas = new ArrayList<String>();
+        ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
         while(leitorFicheiro.hasNextLine()) {
             String linha = leitorFicheiro.nextLine();
             String dados[] = linha.split(",");
@@ -110,119 +131,140 @@ public class Main {
                 String Título = dados[1].trim();
                 float Duração = Float.parseFloat(dados[2].trim());
                 int Orçamento = Integer.parseInt(dados[3].trim());
-                String Data = dados[4];
+                String Data = dados[4].trim();
                 /*System.out.println("ID Filme: " + ID);
                 System.out.println("Título: " + Título);
                 System.out.println("Duração: " + Duração);
                 System.out.println("Orçamento: " + Orçamento);
                 System.out.println("Data: " + Data);*/
+                Filme filme = new Filme();
+                filme.id = ID;
+                filme.título = Título;
+                filme.orçamento = Orçamento;
+                filme.dataDeLançamento = Data;
+                linhasVálidas.add(filme);
                 Movies Movies = new Movies(ID, Título, Duração, Orçamento, Data);
             } else {
                 linhasIgnoradas.add(linha);
             }
         }
         leitorFicheiro.close();
-        return linhasIgnoradas;
+        return new MoviesValid(linhasVálidas,linhasIgnoradas);
+    }
+}
+
+class MoviesValid {
+    ArrayList<Filme> listaFilmes;
+    ArrayList<String> linhasIgnoradas;
+
+    MoviesValid() {}
+
+    MoviesValid(ArrayList<Filme> listaFilmes, ArrayList<String> linhasIgnoradas) {
+        this.listaFilmes = listaFilmes;
+        this.linhasIgnoradas = linhasIgnoradas;
     }
 }
 
 class DeisiPeople {
-    String TipoPessoa;
-    int ID;
-    String NomePessoa;
-    String Género;
-    int IDFilme;
+    String tipoPessoa;
+    int id;
+    String nomePessoa;
+    String género;
+    int idFilme;
 
-    DeisiPeople(String TipoPessoa, int ID, String NomePessoa, String Género, int IDFilme) {
-        this.TipoPessoa = TipoPessoa;
-        this.ID = ID;
-        this.NomePessoa = NomePessoa;
-        this.Género = Género;
-        this.IDFilme = IDFilme;
+    DeisiPeople(String tipoPessoa, int id, String nomePessoa, String género, int idFilme) {
+        this.tipoPessoa = tipoPessoa;
+        this.id = id;
+        this.nomePessoa = nomePessoa;
+        this.género = género;
+        this.idFilme = idFilme;
     }
 }
 
 class Movies {
-    int ID;
-    String Título;
-    float Duração;
-    int Orçamento;
-    String Data;
+    int id;
+    String título;
+    float duração;
+    int orçamento;
+    String data;
 
-    Movies(int ID, String Título, float Duração, int Orçamento, String Data) {
-        this.ID = ID;
-        this.Título = Título;
-        this.Duração = Duração;
-        this.Orçamento = Orçamento;
-        this.Data = Data;
+    Movies(int id, String título, float duração, int orçamento, String data) {
+        this.id = id;
+        this.título = título;
+        this.duração = duração;
+        this.orçamento = orçamento;
+        this.data = data;
     }
 }
 
 class MovieVotes {
-    int ID;
-    float MédiaVotos;
-    int NrVotos;
+    int id;
+    float médiaVotos;
+    int nrVotos;
 
-    MovieVotes(int ID, float MédiaVotos, int NrVotos) {
-        this.ID = ID;
-        this.MédiaVotos = MédiaVotos;
-        this.NrVotos = NrVotos;
+    MovieVotes(int id, float médiaVotos, int nrVotos) {
+        this.id = id;
+        this.médiaVotos = médiaVotos;
+        this.nrVotos = nrVotos;
     }
 }
 
 class Genres {
-    String Género;
-    int ID;
+    String género;
+    int id;
 
-    Genres(String Género, int ID) {
-        this.Género = Género;
-        this.ID = ID;
+    Genres(String género, int id) {
+        this.género = género;
+        this.id = id;
     }
 }
 class Pessoa {
-    int ID;
-    String Nome;
-    String Género;
+    int id;
+    String nome;
+    String género;
 
-    Pessoa(int ID, String Nome, String género) {
-        this.ID = ID;
-        this.Nome = Nome;
-        this.Género = Género;
+    Pessoa(int id, String nome, String género) {
+        this.id = id;
+        this.nome = nome;
+        this.género = género;
     }
 }
 class Filme {
-    int ID;
-    String Título;
-    Pessoa Actores;
-    Pessoa Realizadores;
-    Filme Géneros;
-    String DataDeLançamento;
-    int Orçamento;
-    float MédiaDeVotos;
-    int NrDeVotos;
+    int id;
+    String título;
+    Pessoa actores;
+    Pessoa realizadores;
+    Filme géneros;
+    String dataDeLançamento;
+    int orçamento;
+    float médiaDeVotos;
+    int nrDeVotos;
 
-    Filme(int ID, String Título, Pessoa Actores, Pessoa Realizaores,
-          Filme Género, String DataDeLançamento, int Orçamento, float MédiaDeVotos, int NrDeVotos) {
-        this.ID = ID;
-        this.Título = Título;
-        this.Actores = Actores;
-        this.Realizadores = Realizaores;
-        this.Géneros = Género;
-        this.DataDeLançamento = DataDeLançamento;
-        this.Orçamento = Orçamento;
-        this.MédiaDeVotos = MédiaDeVotos;
-        this.NrDeVotos = NrDeVotos;
+    Filme(){}
+    Filme(int id, String título, Pessoa actores, Pessoa realizaores,
+          Filme género, String dataDeLançamento, int orçamento, float médiaDeVotos, int nrDeVotos) {
+        this.id = id;
+        this.título = título;
+        this.actores = actores;
+        this.realizadores = realizaores;
+        this.géneros = género;
+        this.dataDeLançamento = dataDeLançamento;
+        this.orçamento = orçamento;
+        this.médiaDeVotos = médiaDeVotos;
+        this.nrDeVotos = nrDeVotos;
     }
 
     public String toString() {
-        return "ID | Título | Data Lançamento (formato AAAA-MM-DD) | Nr. Votos | Média Votos";
+        String[] dateFormat = this.dataDeLançamento.split("-");
+        String dateFormatFinal = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
+        return id + " | " + título + " | " + dateFormatFinal + " | " + nrDeVotos + " | " + médiaDeVotos;
     }
 }
 
 class GéneroCinematográfico {
-    String Género;
+    String género;
 
-    GéneroCinematográfico(String Género) {
-        this.Género = Género;
+    GéneroCinematográfico(String género) {
+        this.género = género;
     }
 }
