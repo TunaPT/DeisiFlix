@@ -107,6 +107,7 @@ public class Main {
                 /*System.out.println("ID Filme: " + ID);
                 System.out.println("Média Votos: " + MédiaVotos);
                 System.out.println("Nr Votos: " + NrVotos);*/
+
                 MovieVotes MovieVotes = new MovieVotes(ID, MédiaVotos, NrVotos);
             } else {
                 linhasIgnoradas.add(linha);
@@ -139,9 +140,9 @@ public class Main {
                 System.out.println("Data: " + Data);*/
                 Filme filme = new Filme();
                 filme.id = ID;
-                filme.título = Título;
-                filme.orçamento = Orçamento;
-                filme.dataDeLançamento = Data;
+                filme.titulo = Título;
+                filme.orcamento = Orçamento;
+                filme.dataDeLancamento = Data;
                 linhasVálidas.add(filme);
                 Movies Movies = new Movies(ID, Título, Duração, Orçamento, Data);
             } else {
@@ -169,102 +170,102 @@ class DeisiPeople {
     String tipoPessoa;
     int id;
     String nomePessoa;
-    String género;
+    String genero;
     int idFilme;
 
-    DeisiPeople(String tipoPessoa, int id, String nomePessoa, String género, int idFilme) {
+    DeisiPeople(String tipoPessoa, int id, String nomePessoa, String genero, int idFilme) {
         this.tipoPessoa = tipoPessoa;
         this.id = id;
         this.nomePessoa = nomePessoa;
-        this.género = género;
+        this.genero = genero;
         this.idFilme = idFilme;
     }
 }
 
 class Movies {
     int id;
-    String título;
-    float duração;
-    int orçamento;
+    String titulo;
+    float duracao;
+    int orcamento;
     String data;
 
-    Movies(int id, String título, float duração, int orçamento, String data) {
+    Movies(int id, String titulo, float duracao, int orcamento, String data) {
         this.id = id;
-        this.título = título;
-        this.duração = duração;
-        this.orçamento = orçamento;
+        this.titulo = titulo;
+        this.duracao = duracao;
+        this.orcamento = orcamento;
         this.data = data;
     }
 }
 
 class MovieVotes {
     int id;
-    float médiaVotos;
+    float mediaVotos;
     int nrVotos;
 
-    MovieVotes(int id, float médiaVotos, int nrVotos) {
+    MovieVotes(int id, float mediaVotos, int nrVotos) {
         this.id = id;
-        this.médiaVotos = médiaVotos;
+        this.mediaVotos = mediaVotos;
         this.nrVotos = nrVotos;
     }
 }
 
 class Genres {
-    String género;
+    String genero;
     int id;
 
-    Genres(String género, int id) {
-        this.género = género;
+    Genres(String genero, int id) {
+        this.genero = genero;
         this.id = id;
     }
 }
 class Pessoa {
     int id;
     String nome;
-    String género;
+    String genero;
 
-    Pessoa(int id, String nome, String género) {
+    Pessoa(int id, String nome, String genero) {
         this.id = id;
         this.nome = nome;
-        this.género = género;
+        this.genero = genero;
     }
 }
 class Filme {
     int id;
-    String título;
+    String titulo;
     Pessoa actores;
     Pessoa realizadores;
-    Filme géneros;
-    String dataDeLançamento;
-    int orçamento;
-    float médiaDeVotos;
+    Filme generos;
+    String dataDeLancamento;
+    int orcamento;
+    float mediaDeVotos;
     int nrDeVotos;
 
     Filme(){}
-    Filme(int id, String título, Pessoa actores, Pessoa realizaores,
-          Filme género, String dataDeLançamento, int orçamento, float médiaDeVotos, int nrDeVotos) {
+    Filme(int id, String titulo, Pessoa actores, Pessoa realizadores,
+          Filme genero, String dataDeLancamento, int orcamento, float mediaDeVotos, int nrDeVotos) {
         this.id = id;
-        this.título = título;
+        this.titulo = titulo;
         this.actores = actores;
-        this.realizadores = realizaores;
-        this.géneros = género;
-        this.dataDeLançamento = dataDeLançamento;
-        this.orçamento = orçamento;
-        this.médiaDeVotos = médiaDeVotos;
+        this.realizadores = realizadores;
+        this.generos = genero;
+        this.dataDeLancamento = dataDeLancamento;
+        this.orcamento = orcamento;
+        this.mediaDeVotos = mediaDeVotos;
         this.nrDeVotos = nrDeVotos;
     }
 
     public String toString() {
-        String[] dateFormat = this.dataDeLançamento.split("-");
+        String[] dateFormat = this.dataDeLancamento.split("-");
         String dateFormatFinal = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
-        return id + " | " + título + " | " + dateFormatFinal + " | " + nrDeVotos + " | " + médiaDeVotos;
+        return id + " | " + titulo + " | " + dateFormatFinal + " | " + nrDeVotos + " | " + mediaDeVotos;
     }
 }
 
-class GéneroCinematográfico {
-    String género;
+class GeneroCinematografico {
+    String genero;
 
-    GéneroCinematográfico(String género) {
-        this.género = género;
+    GeneroCinematografico(String genero) {
+        this.genero = genero;
     }
 }
