@@ -15,7 +15,7 @@ public class Main {
         linhasIgnoradas = moviesValid.linhasIgnoradas;
         deisiPeople = scan0();
         deisiGenres = scan1();
-        deisiMovieVotes = scan2();
+        deisiMovieVotes = scan2(linhasVálidas);
     }
     static ArrayList<Filme> getFilmes() { return linhasVálidas; }
 
@@ -91,7 +91,7 @@ public class Main {
     }
 
     //deisi_movie_votes
-    public static ArrayList<String> scan2() throws IOException {
+    public static ArrayList<String> scan2(ArrayList<Filme> Filme) throws IOException {
         String nomeFicheiro = "deisi_movie_votes.txt";
         File ficheiro = new File(nomeFicheiro);
         FileInputStream fis = new FileInputStream(ficheiro);
@@ -107,7 +107,12 @@ public class Main {
                 /*System.out.println("ID Filme: " + ID);
                 System.out.println("Média Votos: " + MédiaVotos);
                 System.out.println("Nr Votos: " + NrVotos);*/
-
+                for (int i = 0; i < Filme.size(); i++) {
+                    if (Filme.get(i).id == ID) {
+                        Filme.get(i).mediaDeVotos = MédiaVotos;
+                        Filme.get(i).nrDeVotos = NrVotos;
+                    }
+                }
                 MovieVotes MovieVotes = new MovieVotes(ID, MédiaVotos, NrVotos);
             } else {
                 linhasIgnoradas.add(linha);
@@ -269,3 +274,4 @@ class GeneroCinematografico {
         this.genero = genero;
     }
 }
+
