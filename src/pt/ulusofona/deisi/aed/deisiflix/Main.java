@@ -3,12 +3,31 @@ package pt.ulusofona.deisi.aed.deisiflix;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
+
+class QueryResult {
+    String valor; // O parâmetro valor deve conter o valor calculado pela query
+    long tempo; // O parâmetro tempo deve ter o tempo (em ms) que a query demorou a ser executada
+
+    // Página 13 - Mais info
+
+    QueryResult(String valor, long tempo) {
+        this.valor = valor;
+        this.tempo = tempo;
+    }
+}
+
 public class Main {
     static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
     static ArrayList<String> linhasIgnoradas = new ArrayList<String>();
     static ArrayList<String> deisiPeople = new ArrayList<String>();
     static ArrayList<String> deisiGenres = new ArrayList<String>();
     static ArrayList<String> deisiMovieVotes = new ArrayList<String>();
+
+
+    public static QueryResult perguntar(String pergunta) { return null; }
+    public static String getVideoURL() { return null; }
+    public static String getCreativeQuery() { return null; }
+
     static void lerFicheiros() throws IOException {
         MoviesValid moviesValid = scan3();
         linhasVálidas = moviesValid.listaFilmes;
