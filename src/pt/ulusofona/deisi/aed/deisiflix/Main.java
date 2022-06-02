@@ -1,5 +1,11 @@
 package pt.ulusofona.deisi.aed.deisiflix;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+
 import java.lang.reflect.Array;
 import java.util.*;
 import java.io.*;
@@ -34,15 +40,16 @@ public class Main {
     public static QueryResult perguntar(String pergunta) {
         QueryResult teste = new QueryResult();
         if (pergunta.contains("COUNT_MOVIES_ACTOR")) {
-
+            long actualTime = System.currentTimeMillis();
             String[] parts = pergunta.split("COUNT_MOVIES_ACTOR");
             String nomeAtor = parts[1].trim(); // Nome completo do autor
             if (dicionario.get(nomeAtor) == null) {
-                teste = new QueryResult("0",2);
+                long finalTime = System.currentTimeMillis();
+                teste = new QueryResult("0",finalTime-actualTime);
             } else {
-                teste = new QueryResult(Integer.toString(dicionario.get(nomeAtor)),2);
+                long finalTime = System.currentTimeMillis();
+                teste = new QueryResult(Integer.toString(dicionario.get(nomeAtor)),finalTime-actualTime);
             }
-
         } else if (pergunta.contains("GET_MOVIES_ACTOR_YEAR")) {
             String[] parts = pergunta.split(" ");
             String part1 = parts[0].trim();
@@ -98,16 +105,16 @@ public class Main {
     public static String getCreativeQuery() { return null; }
 
     static void lerFicheiros() throws IOException {
-        MoviesValid moviesValid = scan3();
+        MoviesValid moviesValid = readerDeisiMovies();
         linhasVálidas = moviesValid.listaFilmes;
         linhasIgnoradas = moviesValid.linhasIgnoradas;
-        deisiPeople = scan0();
-        deisiGenres = scan1();
-        deisiMovieVotes = scan2(linhasVálidas);
+        deisiPeople = readerDeisiPeople();
+        deisiGenres = readerDeisiGenres();
+        deisiMovieVotes = readerDeisiMovieVotes(linhasVálidas);
     }
     static ArrayList<Filme> getFilmes() { return linhasVálidas; }
 
-    static ArrayList<String> getLinhasIgnoradas(String fileName) throws IOException {
+    static ArrayList<String> getLinhasIgnoradas(String fileName) {
         if (fileName == "deisi_people.txt") {
             return deisiPeople;
         } else if (fileName == "deisi_genres.txt") {
@@ -132,16 +139,14 @@ public class Main {
             line = in.nextLine();
         }
     }
-    //deisi_people
-    public static ArrayList<String> scan0() throws IOException {
+
+    public static ArrayList<String> readerDeisiPeople() throws IOException {
         int countNomePessoa = 1;
-        String nomeFicheiro = "deisi_people.txt";
-        File ficheiro = new File(nomeFicheiro);
-        FileInputStream fis = new FileInputStream(ficheiro);
-        Scanner leitorFicheiro = new Scanner(fis);
+        FileReader fr = new FileReader("deisi_people.txt");
+        BufferedReader reader = new BufferedReader(fr);
+        String linha = null;
         ArrayList<String> linhasIgnoradas = new ArrayList<String>();
-        while(leitorFicheiro.hasNextLine()) {
-            String linha = leitorFicheiro.nextLine();
+        while((linha = reader.readLine()) != null) {
             String dados[] = linha.split(",");
             if (dados.length == 5) {
                 String TipoPessoa = dados[0].trim();
@@ -181,19 +186,16 @@ public class Main {
                 linhasIgnoradas.add(linha);
             }
         }
-        leitorFicheiro.close();
+        reader.close();
         return linhasIgnoradas;
     }
 
-    //deisi_genres
-    public static ArrayList<String> scan1() throws IOException {
-        String nomeFicheiro = "deisi_genres.txt";
-        File ficheiro = new File(nomeFicheiro);
-        FileInputStream fis = new FileInputStream(ficheiro);
-        Scanner leitorFicheiro = new Scanner(fis);
+    public static ArrayList<String> readerDeisiGenres() throws IOException {
+        FileReader fr = new FileReader("deisi_genres.txt");
+        BufferedReader reader = new BufferedReader(fr);
+        String linha = null;
         ArrayList<String> linhasIgnoradas = new ArrayList<String>();
-        while(leitorFicheiro.hasNextLine()) {
-            String linha = leitorFicheiro.nextLine();
+        while((linha = reader.readLine()) != null) {
             String dados[] = linha.split(",");
             if (dados.length == 2) {
                 String Género = dados[0].trim();
@@ -205,19 +207,16 @@ public class Main {
                 linhasIgnoradas.add(linha);
             }
         }
-        leitorFicheiro.close();
+        reader.close();
         return linhasIgnoradas;
     }
 
-    //deisi_movie_votes
-    public static ArrayList<String> scan2(ArrayList<Filme> Filme) throws IOException {
-        String nomeFicheiro = "deisi_movie_votes.txt";
-        File ficheiro = new File(nomeFicheiro);
-        FileInputStream fis = new FileInputStream(ficheiro);
-        Scanner leitorFicheiro = new Scanner(fis);
+    public static ArrayList<String> readerDeisiMovieVotes(ArrayList<Filme> Filme) throws IOException {
+        FileReader fr = new FileReader("deisi_movie_votes.txt");
+        BufferedReader reader = new BufferedReader(fr);
+        String linha = null;
         ArrayList<String> linhasIgnoradas = new ArrayList<String>();
-        while(leitorFicheiro.hasNextLine()) {
-            String linha = leitorFicheiro.nextLine();
+        while((linha = reader.readLine()) != null) {
             String dados[] = linha.split(",");
             if (dados.length == 3) {
                 int ID = Integer.parseInt(dados[0].trim());
@@ -237,19 +236,17 @@ public class Main {
                 linhasIgnoradas.add(linha);
             }
         }
-        leitorFicheiro.close();
+        reader.close();
         return linhasIgnoradas;
     }
-    //deisi_movies
-    public static MoviesValid scan3() throws IOException {
-        String nomeFicheiro = "deisi_movies.txt";
-        File ficheiro = new File(nomeFicheiro);
-        FileInputStream fis = new FileInputStream(ficheiro);
-        Scanner leitorFicheiro = new Scanner(fis);
+
+    public static MoviesValid readerDeisiMovies() throws IOException {
+        FileReader fr = new FileReader("deisi_movies.txt");
+        BufferedReader reader = new BufferedReader(fr);
+        String linha = null;
         ArrayList<String> linhasIgnoradas = new ArrayList<String>();
         ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
-        while(leitorFicheiro.hasNextLine()) {
-            String linha = leitorFicheiro.nextLine();
+        while((linha = reader.readLine()) != null) {
             String dados[] = linha.split(",");
             if (dados.length == 5) {
                 int ID = Integer.parseInt(dados[0].trim());
@@ -275,7 +272,7 @@ public class Main {
                 linhasIgnoradas.add(linha);
             }
         }
-        leitorFicheiro.close();
+        reader.close();
         return new MoviesValid(linhasVálidas,linhasIgnoradas);
     }
 }
