@@ -66,8 +66,22 @@ public class Main {
                         TitulosAndDatas.add(new InfoMoviesActorYear(pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[0],pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1]));
                     }
                 }
+                ArrayList<String> arrayListDatas = new ArrayList<>();
+                HashMap<String,String> dadosFilmes = new HashMap<>();
                 for (int i=0;i<TitulosAndDatas.size();i++) {
-                    System.out.println(TitulosAndDatas.get(i).tituloFilme + " - " + TitulosAndDatas.get(i).data);
+                    String[] dateFormat = pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1].split("-");
+                    String dateFormatFinal2 = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
+                    //String maior = TitulosAndDatas.get(i).data;
+                    dadosFilmes.put(dateFormatFinal2,TitulosAndDatas.get(i).tituloFilme);
+                    arrayListDatas.add(dateFormatFinal2);
+                    System.out.println(dateFormatFinal2);
+                    //System.out.println(TitulosAndDatas.get(i).tituloFilme + " - " + TitulosAndDatas.get(i).data);
+                }
+                System.out.println("----");
+                Collections.sort(arrayListDatas,Collections.reverseOrder());
+                for (int i=0;i<TitulosAndDatas.size();i++) {
+                    //System.out.println(arrayListDatas.get(i));
+                    System.out.println(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i));
                 }
             }
             long finalTime = System.currentTimeMillis();
