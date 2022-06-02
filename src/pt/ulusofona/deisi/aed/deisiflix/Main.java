@@ -58,14 +58,36 @@ public class Main {
             String secondName = parts[2].trim();
             String year = parts[3].trim();
             if (filmesAno.get(firstName + " " + secondName) != null) {
-                //System.out.println(filmesAno.get(firstName + " " + secondName)); //Mostra ArrayList com os IDs dos Filmes
-                ArrayList<String[]> TitulosAndDatas = new ArrayList<String[]>();
-                //String[] TituloData = pesquisaPorIDFilme.get(filmesAno.get(firstName + " " + secondName).get(0));
-                //System.out.println(TituloData[1]);
-                for (int i=0;i<filmesAno.get(firstName + " " + secondName).size();i++) {
-                    TitulosAndDatas.add(pesquisaPorIDFilme.get(filmesAno.get(firstName + " " + secondName).get(i)));
+                //System.out.println(filmesAno.get(firstName + " " + secondName)); // Mostra ArrayList com os IDs dos Filmes
+                //System.out.println(filmesAno.get(firstName + " " + secondName).get(0)); // Mostra ID do primeiro
+                ArrayList<Integer> arrayListIDsFilmes = filmesAno.get(firstName + " " + secondName); // Variável com arraylist dos ids dos filmes
+                int ID = arrayListIDsFilmes.get(0); //Obtem o primeiro elemento do arralyst
+                String[] DadosTituloData = pesquisaPorIDFilme.get(ID); // Obtem o Array que contem o Titulo e Filme
+                //System.out.println(DadosTituloData[0]); // Obtem o titulo do filme
+                //System.out.println(DadosTituloData[1]); // Obtem a data do filme
+
+
+
+
+                ArrayList<InfoMoviesActorYear> TitulosAndDatas = new ArrayList<InfoMoviesActorYear>();
+                //System.out.println(pesquisaPorIDFilme.get(filmesAno.get(firstName + " " + secondName)));
+                String[] teste = new String[arrayListIDsFilmes.size()];
+                teste = pesquisaPorIDFilme.get(ID);
+                for (int i=0;i<arrayListIDsFilmes.size();i++) {
+                    String[] dateFormat = pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1].split("-");
+                    String dateFormatFinal = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
+                    //int ID2 = arrayListIDsFilmes.get(i);
+                    //System.out.println(pesquisaPorIDFilme.get(ID2)[1]);
+                    if (year == dateFormat[2]) {
+                        TitulosAndDatas.add(new InfoMoviesActorYear(pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[0],pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1]));
+                    }
+
+                    //teste[i] = pesquisaPorIDFilme.get(arrayListIDsFilmes);
+                    //MovieVotes MovieVotes = new MovieVotes(ID, MédiaVotos, NrVotos);
+                    //TitulosAndDatas.add(pesquisaPorIDFilme.get(filmesAno.get(firstName + " " + secondName).get(i)));
                 }
-                //System.out.println(filmesAno.get(firstName + " " + secondName).size()); //DEBUG
+
+                //System.out.println(TitulosAndDatas);
             }
             long finalTime = System.currentTimeMillis();
             query = new QueryResult("s",finalTime-initialTime);
@@ -281,6 +303,9 @@ class InfoMoviesActorYear {
     InfoMoviesActorYear(String tituloFilme, String data) {
         this.tituloFilme = tituloFilme;
         this.data = data;
+    }
+    public String toString() {
+        return tituloFilme + " | " + data + "\n";
     }
 }
 
