@@ -80,10 +80,8 @@ public class Main {
                 for (int i=0;i<TitulosAndDatas.size();i++) {
                     if (i==TitulosAndDatas.size()-1) {
                         outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i);
-                        //System.out.print(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i)); //Data ordenada
                     } else {
                         outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i) + "\n";
-                        //System.out.println(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i)); //Data ordenada
                     }
                 }
             }
