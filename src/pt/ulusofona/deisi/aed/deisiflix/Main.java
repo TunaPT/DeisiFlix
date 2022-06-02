@@ -57,6 +57,7 @@ public class Main {
             String firstName = parts[1].trim();
             String secondName = parts[2].trim();
             String year = parts[3].trim();
+            String outputFinal = "";
             if (filmesAno.get(firstName + " " + secondName) != null) {
                 ArrayList<Integer> arrayListIDsFilmes = filmesAno.get(firstName + " " + secondName); // Variável com arraylist dos ids dos filmes
                 ArrayList<InfoMoviesActorYear> TitulosAndDatas = new ArrayList<InfoMoviesActorYear>();
@@ -69,23 +70,25 @@ public class Main {
                 ArrayList<String> arrayListDatas = new ArrayList<>();
                 HashMap<String,String> dadosFilmes = new HashMap<>();
                 for (int i=0;i<TitulosAndDatas.size();i++) {
-                    String[] dateFormat = pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1].split("-");
-                    String dateFormatFinal2 = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
-                    //String maior = TitulosAndDatas.get(i).data;
-                    dadosFilmes.put(dateFormatFinal2,TitulosAndDatas.get(i).tituloFilme);
-                    arrayListDatas.add(dateFormatFinal2);
-                    System.out.println(dateFormatFinal2);
-                    //System.out.println(TitulosAndDatas.get(i).tituloFilme + " - " + TitulosAndDatas.get(i).data);
+                    String[] dateFormat = TitulosAndDatas.get(i).data.split("-");
+                    String dateFormatFinal = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
+                    dadosFilmes.put(dateFormatFinal,TitulosAndDatas.get(i).tituloFilme);
+                    arrayListDatas.add(dateFormatFinal);
+                    //System.out.println(TitulosAndDatas.get(i).tituloFilme + " " + dateFormatFinal); //Data sem estar ordenada
                 }
-                System.out.println("----");
-                Collections.sort(arrayListDatas,Collections.reverseOrder());
+                Collections.sort(arrayListDatas,Collections.reverseOrder()); //ordena por data decrescente
                 for (int i=0;i<TitulosAndDatas.size();i++) {
-                    //System.out.println(arrayListDatas.get(i));
-                    System.out.println(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i));
+                    if (i==TitulosAndDatas.size()-1) {
+                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i);
+                        //System.out.print(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i)); //Data ordenada
+                    } else {
+                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i) + "\n";
+                        //System.out.println(dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i)); //Data ordenada
+                    }
                 }
             }
             long finalTime = System.currentTimeMillis();
-            query = new QueryResult("s",finalTime-initialTime);
+            query = new QueryResult(outputFinal,finalTime-initialTime);
         } else if (pergunta.contains("COUNT_MOVIES_WITH_ACTORS")) {
 
             String[] parts = pergunta.split(";");
