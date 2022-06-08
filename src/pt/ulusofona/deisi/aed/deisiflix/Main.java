@@ -121,15 +121,16 @@ public class Main {
             String[] parts = pergunta.split(" ");
             HashSet<Integer> IDActor = new HashSet<>();
             for (int i=1;i<parts.length;i++) {
-                //System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
+                System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
                 for (int k=0;k<actoresDiferentes.get(parts[i]).size();k++) {
-                    //System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
+                    System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
                     if (actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)) != null) {
                         for (int l = 0; l < actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size(); l++) {
-                            //System.out.print(actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size() + " | ");
+                            System.out.println("ID Pessoa: " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l));
                             pesquisaAnoActor.put(parts[i], new HashSet<Integer>((Integer) actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l)));
-                            // Objetivo colocar o ano e um HashSet com os IDs todos dos actores desse ano
+                            // Objetivo colocar o ano e um HashSet com os IDs todos dos actores desse ano //VERIFICAR ESTA PARTE AQUI - FALTA ADICIONAR OS IDS A UM UNICO HASHSET
                         }
+                        System.out.print("SIZE ArrayList: " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size() + "\n");
                         System.out.println();
                     }
                 }
