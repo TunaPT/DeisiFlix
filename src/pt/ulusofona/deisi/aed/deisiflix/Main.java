@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.HashMap;
+
 class QueryResult {
     String valor; // O parâmetro valor deve conter o valor calculado pela query
     long tempo; // O parâmetro tempo deve ter o tempo (em ms) que a query demorou a ser executada
@@ -21,12 +22,24 @@ class QueryResult {
 
 public class Main {
 
+    static boolean functionMoviesWithActors(int length, int k, String[] parts) {
+        for (int i=2;i<length;i++) {
+            if (filmesAno.get(parts[i]).contains(filmesAno.get(parts[0]).get(k)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static HashMap<String,Integer> dicionario = new HashMap<String,Integer>(); //HASHMAP
     static HashMap<String,ArrayList> filmesAno = new HashMap<String,ArrayList>();
 
 
 
     static HashMap<Integer,String[]> pesquisaPorIDFilme = new HashMap<Integer,String[]>();
+
+
+
 
 
 
@@ -60,7 +73,7 @@ public class Main {
             String outputFinal = "";
             if (filmesAno.get(firstName + " " + secondName) != null) {
                 ArrayList<Integer> arrayListIDsFilmes = filmesAno.get(firstName + " " + secondName); // Variável com arraylist dos ids dos filmes
-                ArrayList<InfoMoviesActorYear> TitulosAndDatas = new ArrayList<InfoMoviesActorYear>();
+                ArrayList<InfoMoviesActorYear> TitulosAndDatas = new ArrayList<>();
                 for (int i=0;i<arrayListIDsFilmes.size();i++) {
                     String[] dateFormat = pesquisaPorIDFilme.get(arrayListIDsFilmes.get(i))[1].split("-");
                     if (year.equals(dateFormat[2])) {
@@ -88,16 +101,21 @@ public class Main {
             long finalTime = System.currentTimeMillis();
             query = new QueryResult(outputFinal,finalTime-initialTime);
         } else if (pergunta.contains("COUNT_MOVIES_WITH_ACTORS")) {
-
-            String[] parts = pergunta.split(";");
-
-
-            query = new QueryResult("s",2);
+            String[] partes = pergunta.split("COUNT_MOVIES_WITH_ACTORS");
+            String[] parts = partes[1].trim().split(";");
+            int count = 0;
+            if (parts.length > 1) {
+                for (int k=0; k<filmesAno.get(parts[0]).size(); k++) {
+                    if (filmesAno.get(parts[1]).contains(filmesAno.get(parts[0]).get(k))) { //Se a linha seguinte tiver um elemento da linha anterior, avança
+                        if (functionMoviesWithActors(parts.length, k, parts) == true) {
+                            count++;
+                        }
+                    }
+                }
+            }
+            query = new QueryResult(Integer.toString(count),2);
         } else if (pergunta.contains("COUNT_ACTORS_3_YEARS")) {
-
             String[] parts = pergunta.split(" ");
-
-
             query = new QueryResult("s",2);
         } else if (pergunta.contains("TOP_MOVIES_WITH_GENDER_BIAS")) {
             query = new QueryResult("s",2);
