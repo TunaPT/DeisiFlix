@@ -39,8 +39,8 @@ public class Main {
     static HashMap<Integer,String[]> pesquisaPorIDFilme = new HashMap<Integer,String[]>();
 
 
-
-
+    static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();
+    static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>();
 
 
     static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
@@ -116,6 +116,16 @@ public class Main {
             query = new QueryResult(Integer.toString(count),2);
         } else if (pergunta.contains("COUNT_ACTORS_3_YEARS")) {
             String[] parts = pergunta.split(" ");
+            for (int i=1;i<parts.length;i++) {
+                System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
+                for (int k=0;k<actoresDiferentes.get(parts[i]).size();k++) {
+                    System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
+                }
+                System.out.println();
+            }
+            //filmesAnos a chave de procura é o nome de autor e devolve um arraylist com os IDs dos filmes
+            //pesquisarPorIDFilme a chave de procura é o ID do filme e devolve um array com o titulo e data
+
             query = new QueryResult("s",2);
         } else if (pergunta.contains("TOP_MOVIES_WITH_GENDER_BIAS")) {
             query = new QueryResult("s",2);
@@ -215,6 +225,22 @@ public class Main {
                     IDFilmesPessoa.add(IDFilme);
                     filmesAno.put(NomePessoa,IDFilmesPessoa);
                 }
+
+
+                // EM OBRAS
+                if (TipoPessoa.equals("ACTOR")) {
+                    if (actoresDiferentes2.get(IDFilme) == null) {
+                        ArrayList<Integer> IDsActores = new ArrayList<>();
+                        IDsActores.add(ID);
+                        actoresDiferentes2.put(IDFilme, IDsActores);
+                    } else {
+                        ArrayList<Integer> IDsActores = actoresDiferentes2.get(IDFilme);
+                        IDsActores.add(ID);
+                        actoresDiferentes2.put(IDFilme, IDsActores);
+                    }
+                }
+
+
             } else {
                 linhasIgnoradas.add(linha);
             }
@@ -301,6 +327,20 @@ public class Main {
                 Movies Movies = new Movies(ID, Título, Duração, Orçamento, Data);
                 String[] arrayInfoFilme = {Título,Data};
                 pesquisaPorIDFilme.put(ID,arrayInfoFilme);
+
+                // EM OBRAS
+                String[] dateFormat = Data.split("-");
+                if (actoresDiferentes.get(dateFormat[2]) == null) {
+                    ArrayList<Integer> IDsFilmes = new ArrayList<>();
+                    IDsFilmes.add(ID);
+                    actoresDiferentes.put(dateFormat[2],IDsFilmes);
+                } else {
+                    ArrayList<Integer> IDsFilmes = actoresDiferentes.get(dateFormat[2]);
+                    IDsFilmes.add(ID);
+                    actoresDiferentes.put(dateFormat[2],IDsFilmes);
+                }
+
+
             } else {
                 linhasIgnoradas.add(linha);
             }
