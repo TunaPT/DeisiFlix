@@ -41,6 +41,9 @@ public class Main {
 
     static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();
     static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>();
+    static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();
+
+
 
 
     static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
@@ -116,13 +119,24 @@ public class Main {
             query = new QueryResult(Integer.toString(count),2);
         } else if (pergunta.contains("COUNT_ACTORS_3_YEARS")) {
             String[] parts = pergunta.split(" ");
+            HashSet<Integer> IDActor = new HashSet<>();
             for (int i=1;i<parts.length;i++) {
-                System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
+                //System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
                 for (int k=0;k<actoresDiferentes.get(parts[i]).size();k++) {
-                    System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
+                    //System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
+                    if (actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)) != null) {
+                        for (int l = 0; l < actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size(); l++) {
+                            //System.out.print(actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size() + " | ");
+                            pesquisaAnoActor.put(parts[i], new HashSet<Integer>((Integer) actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l)));
+                            // Objetivo colocar o ano e um HashSet com os IDs todos dos actores desse ano
+                        }
+                        System.out.println();
+                    }
                 }
+                //System.out.println("Todos os Actores do Ano: " + parts[i] + ": " + pesquisaAnoActor.get(parts[i]));
                 System.out.println();
             }
+
             //filmesAnos a chave de procura é o nome de autor e devolve um arraylist com os IDs dos filmes
             //pesquisarPorIDFilme a chave de procura é o ID do filme e devolve um array com o titulo e data
 
