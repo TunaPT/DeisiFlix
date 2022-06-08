@@ -44,6 +44,9 @@ public class Main {
     static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();
 
 
+    //GET_TOP_ACTOR_YEAR
+    static HashMap<String,ArrayList> topActorYear = new HashMap<>();
+    static HashMap<Integer,String> getPersonNameById = new HashMap<>();
 
 
     static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
@@ -95,9 +98,9 @@ public class Main {
                 Collections.sort(arrayListDatas,Collections.reverseOrder()); //ordena por data decrescente
                 for (int i=0;i<TitulosAndDatas.size();i++) {
                     if (i==TitulosAndDatas.size()-1) {
-                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i);
+                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " (" + arrayListDatas.get(i) + ")";
                     } else {
-                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " " + arrayListDatas.get(i) + "\n";
+                        outputFinal = outputFinal + dadosFilmes.get(arrayListDatas.get(i)) + " (" + arrayListDatas.get(i) + ")\n";
                     }
                 }
             }
@@ -118,8 +121,14 @@ public class Main {
             }
             query = new QueryResult(Integer.toString(count),2);
         } else if (pergunta.contains("COUNT_ACTORS_3_YEARS")) {
+
+            /*static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();  //Key ANO, devolve filmes desse ano
+            static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>(); //Key filme, devolve IDs das pessoas desse filme
+            static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();*/
+
             String[] parts = pergunta.split(" ");
             HashSet<Integer> IDActor = new HashSet<>();
+            int count=0;
             for (int i=1;i<parts.length;i++) {
                 //System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
                 for (int k=0;k<actoresDiferentes.get(parts[i]).size();k++) {
@@ -141,15 +150,26 @@ public class Main {
                         //System.out.println();
                     }
                 }
-                System.out.println("No Ano " + parts[i] + " existem " + actoresDiferentes.get(parts[i]).size() + " actores");
+                //System.out.println("No Ano " + parts[i] + " existem " + actoresDiferentes.get(parts[i]).size() + " actores");
                 //System.out.println("Todos os Actores do Ano: " + parts[i] + ": " + pesquisaAnoActor.get(parts[i]));
-                System.out.println();
+                //System.out.println();
             }
-
+            //System.out.println(actoresDiferentes.get(parts[1]).size());
+            for (int i=0;i<actoresDiferentes.get(parts[1]).size();i++) {
+                //System.out.println(actoresDiferentes.get(parts[2]).get(i));
+                if (pesquisaAnoActor.get(parts[2]).contains(pesquisaAnoActor.get(parts[1]).contains(i))) {
+                    System.out.println("zzz");
+                    /*for (int k=0;k<actoresDiferentes.get(parts[1]).size();k++) {
+                        System.out.println("xxx");
+                        if (actoresDiferentes.get(parts[3]).contains(actoresDiferentes.get(parts[1]).get(k))) {
+                            System.out.println("aw");
+                            count++;
+                        }
+                    }*/
+                }
+            }
             //filmesAnos a chave de procura é o nome de autor e devolve um arraylist com os IDs dos filmes
             //pesquisarPorIDFilme a chave de procura é o ID do filme e devolve um array com o titulo e data
-
-            query = new QueryResult("s",2);
         } else if (pergunta.contains("TOP_MOVIES_WITH_GENDER_BIAS")) {
             query = new QueryResult("s",2);
         } else if (pergunta.contains("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR")) {
@@ -163,10 +183,41 @@ public class Main {
         } else if (pergunta.contains("TOP_6_DIRECTORS_WITHIN_FAMILY")) {
             query = new QueryResult("s",2);
         } else if (pergunta.contains("GET_TOP_ACTOR_YEAR")) {
-            query = new QueryResult("s",2);
+            String[] partes = pergunta.split("GET_TOP_ACTOR_YEAR");
+            String ano = partes[1].trim();
+            ArrayList<Integer> arrayList = topActorYear.get(ano); //Devolve o ID do Filme. Com base no ID do Filme, tentar obter o nome da pessoa ou ID da pessoa
+            ArrayList<Integer> arrayListIDsPessoa = new ArrayList<>();
+            for (int i=0;i<arrayList.size();i++) {
+                if (actoresDiferentes2.get(arrayList.get(i)) != null) {
+                    for (int k = 0; k < actoresDiferentes2.get(arrayList.get(i)).size(); k++) {
+                        arrayListIDsPessoa.add((Integer) actoresDiferentes2.get(arrayList.get(i)).get(k));
+                    }
+                }
+                actoresDiferentes2.get(arrayList.get(i)); // Arraylist
+            }
+            int maior = Collections.frequency(arrayListIDsPessoa,arrayListIDsPessoa.get(0));
+            int id = arrayListIDsPessoa.get(0);
+            for (int i=1;i<arrayListIDsPessoa.size();i++) {
+                if (Collections.frequency(arrayListIDsPessoa,arrayListIDsPessoa.get(i)) > maior) {
+                    id = arrayListIDsPessoa.get(i);
+                    maior = Collections.frequency(arrayListIDsPessoa,arrayListIDsPessoa.get(i));
+                }
+            }
+            String nome = getPersonNameById.get(id);
+            query = new QueryResult(nome + ";" + Integer.toString(maior),2);
         } else if (pergunta.contains("INSERT_ACTOR")) {
+            String[] partes = pergunta.split("INSERT_ACTOR");
+            String[] parts = partes[1].trim().split(";");
+            String IDActor = parts[0].trim();
+            String NomeActor = parts[1].trim();
+            String GeneroActor = parts[2].trim();
+            String IDFilme = partes[3].trim();
+            new DeisiPeople("ACTOR", Integer.parseInt(IDActor), NomeActor, GeneroActor, Integer.parseInt(IDFilme));
+
             query = new QueryResult("s",2);
         } else if (pergunta.contains("REMOVE_ACTOR")) {
+            String[] partes = pergunta.split(" ");
+            String IDActor = partes[1];
             query = new QueryResult("s",2);
         } else if (pergunta.contains("GET_DUPLICATE_LINES_YEAR")) {
             query = new QueryResult("s",2);
@@ -176,13 +227,18 @@ public class Main {
     public static String getVideoURL() { return null; }
     public static String getCreativeQuery() { return null; }
 
+    static boolean readFiles = false;
+
     static void lerFicheiros() throws IOException {
-        MoviesValid moviesValid = readerDeisiMovies();
-        linhasVálidas = moviesValid.listaFilmes;
-        linhasIgnoradas = moviesValid.linhasIgnoradas;
-        deisiPeople = readerDeisiPeople();
-        deisiGenres = readerDeisiGenres();
-        deisiMovieVotes = readerDeisiMovieVotes(linhasVálidas);
+        if (readFiles == false) {
+            MoviesValid moviesValid = readerDeisiMovies();
+            linhasVálidas = moviesValid.listaFilmes;
+            linhasIgnoradas = moviesValid.linhasIgnoradas;
+            deisiPeople = readerDeisiPeople();
+            deisiGenres = readerDeisiGenres();
+            deisiMovieVotes = readerDeisiMovieVotes(linhasVálidas);
+            readFiles = true;
+        }
     }
     static ArrayList<Filme> getFilmes() { return linhasVálidas; }
 
@@ -263,6 +319,8 @@ public class Main {
                     }
                 }
 
+                //GET_TOP_ACTOR_YEAR
+                getPersonNameById.put(ID,NomePessoa);
 
             } else {
                 linhasIgnoradas.add(linha);
@@ -363,6 +421,13 @@ public class Main {
                     actoresDiferentes.put(dateFormat[2],IDsFilmes);
                 }
 
+                if (topActorYear.get(dateFormat[2]) == null) {
+                    topActorYear.put(dateFormat[2], new ArrayList<Integer>(ID));
+                } else {
+                    ArrayList<Integer> arrayList = topActorYear.get(dateFormat[2]); //Adiciona ID do Filme
+                    arrayList.add(ID);
+                    topActorYear.put(dateFormat[2],arrayList);
+                }
 
             } else {
                 linhasIgnoradas.add(linha);
