@@ -386,7 +386,7 @@ public class Main {
             }
             long finalTime = System.currentTimeMillis();
             query = new QueryResult(output,finalTime-initialTime);
-        } else if (pergunta.contains("TOP_6_DIRECTORS_WITHIN_FAMILY")) {
+        } else if (pergunta.contains("TOP_6_DIRECTORS_WITHIN_FAMILY")) { //O nome realizador que pedem é o nome da "familia", certo?
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split(" ");
             String anoInicial = partes[1].trim();
@@ -409,7 +409,7 @@ public class Main {
                         for (int l = 0; l < listIDsDirectors.size(); l++) { // Percorro o Arraylist com IDs dos directors
                             int idDirector = listIDsDirectors.get(l); // Obtenho o ID do Director
                             String nomeDirector = insertDirectorIDGetName.get(idDirector); // Obtenho o Nome do Director
-                            if (insertIDFilmeGetListNames.get(idFilme) == null) {
+                            if (insertIDFilmeGetListNames.get(idFilme) == null) { //Adiciono os nomes de directors a um hashmap com key ID Filme
                                 ArrayList<String> arrayList = new ArrayList<>();
                                 arrayList.add(nomeDirector);
                                 insertIDFilmeGetListNames.put(idFilme, arrayList);
@@ -418,6 +418,13 @@ public class Main {
                                 arrayList.add(nomeDirector);
                                 insertIDFilmeGetListNames.put(idFilme, arrayList);
                             }
+                        }
+                        //System.out.println(insertIDFilmeGetListNames.get(idFilme).size()); // Mostra o numero de realizadores de um filme
+                        ArrayList<String> listNomesDirectors = insertIDFilmeGetListNames.get(idFilme); // Arraylist com nomes dos directors de um filme
+                        for (int l=0;l<listNomesDirectors.size();l++) { // Size = Numero de Realizadores de um filme
+                            String[] dateFormat = listNomesDirectors.get(l).split(" "); // Forma para obter o último nome do director
+                            String ultimoNome = dateFormat[dateFormat.length-1];
+                           // System.out.println("");
                         }
                     }
                     System.out.println(insertIDFilmeGetListNames.get(idFilme));
