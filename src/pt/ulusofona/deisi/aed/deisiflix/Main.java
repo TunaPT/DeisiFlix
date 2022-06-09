@@ -39,7 +39,7 @@ public class Main {
     static HashMap<Integer,String[]> pesquisaPorIDFilme = new HashMap<Integer,String[]>();
 
 
-    static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();
+    static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>(); //Key Ano de Filme | Devolve Arraylist com IDs dos filmes       //nomear função para insertDateGetIDFilme
     static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>();
     static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();
 
@@ -52,8 +52,15 @@ public class Main {
     //GET_TOP_N_YEARS_BEST_AVG_VOTES
     static HashSet<String> anoFilmes = new HashSet<>();
     static HashMap<String,ArrayList> mediaVotosFilmes = new HashMap<>();
-    static HashMap<Integer,Float> idFilmeMediaVotos = new HashMap<>(); // Key IDFilme | Devolve Arraylist MediaFilmes
+    static HashMap<Integer,Float> idFilmeMediaVotos = new HashMap<>(); // Key IDFilme | Devolve Float MediaFilmes
     static HashMap<String,Float> anoPontuacao = new HashMap<>();
+
+    //GET_TOP_N_MOVIES_RATIO
+    //actoresDiferentes será utilizado aqui  //Key Ano de Filme | Devolve Arraylist com IDs dos filmes
+    //actoresDeUmFilme será utilizado para saber o size  // Key IDFilme | Devolve Arraylist com IDs dos participantes no filme
+    //idFilmeMediaVotos será utilizado   // Key IDFilme | Devolve Float MediaFilmes
+    //tituloDeUmFilme   // Key IDFilme | Devolve o titulo do filme
+    static HashMap<Integer,Integer> insertIDFilmeGetNumeroVotos = new HashMap<>();
 
     //GET_TOP_ACTOR_YEAR
     static HashMap<String,ArrayList> topActorYear = new HashMap<>();
@@ -189,12 +196,10 @@ public class Main {
             long initialTime = System.currentTimeMillis();
             long finalTime = System.currentTimeMillis();
             query = new QueryResult("s",finalTime-initialTime);
-        } else if (pergunta.contains("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR")) {
+        } else if (pergunta.contains("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR")) { // FEITO
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR");
             String idFilme = partes[1].trim();
-
-
             String output = "";
             if (idFilmeMediaVotos.get(Integer.parseInt(idFilme)) != null) {
                 float votacaoMediaFilmeX = idFilmeMediaVotos.get(Integer.parseInt(idFilme));
@@ -205,7 +210,6 @@ public class Main {
                         if (actoresDeUmFilme.get(IDFilmesComMesmaMediaDoFilmeX.get(i)) != null) {
                             for (int k = 0; k < actoresDeUmFilme.get(IDFilmesComMesmaMediaDoFilmeX.get(i)).size(); k++) {
                                 if (idActoresFilmeX.contains(actoresDeUmFilme.get(IDFilmesComMesmaMediaDoFilmeX.get(i)).get(k))) {
-                                    //System.out.println("Fixe, contem um ator em comum");
                                     if (output.equals("")) {
                                         output = tituloDeUmFilme.get(IDFilmesComMesmaMediaDoFilmeX.get(i));
                                     } else {
@@ -264,15 +268,42 @@ public class Main {
             long initialTime = System.currentTimeMillis();
             long finalTime = System.currentTimeMillis();
             query = new QueryResult("s",finalTime-initialTime);
-        } else if (pergunta.contains("GET_TOP_N_MOVIES_RATIO")) {
+        } else if (pergunta.contains("GET_TOP_N_MOVIES_RATIO")) { //Descrobrir o ERRO. Print no discord de como estava antes
             long initialTime = System.currentTimeMillis();
+            String[] partes = pergunta.split(" ");
+            String topNFilmes = partes[1].trim();
+            String ano = partes[2].trim();
+            ArrayList<Integer> idFilmes = actoresDiferentes.get(ano); // idFiles = Arraylist com IDs dos filmes em inteiros
+            float maior = (float) insertIDFilmeGetNumeroVotos.get(idFilmes.get(0))/actoresDeUmFilme.get(idFilmes.get(0)).size(); // média de pontuaçao do filme (em inteiro) na primeira posição do arraylist
+            int idFilme = idFilmes.get(0);
+            int index = 0;
+            String output = "";
+            for (int i=0;i<Integer.parseInt(topNFilmes);i++) {
+                for (int k=0;k<idFilmes.size();k++) {
+                    if (actoresDeUmFilme.get(idFilmes.get(k)) != null) {
+                        int numVotos = insertIDFilmeGetNumeroVotos.get(idFilmes.get(k));
+                        int numActoresParticipantesFilme = actoresDeUmFilme.get(idFilmes.get(k)).size(); //Numero atores participantes no filme
+                        if ((float) numVotos/numActoresParticipantesFilme > maior) {
+                            maior = (float) numVotos/numActoresParticipantesFilme;
+                            idFilme = idFilmes.get(k);
+                            index = k;
+                        }
+                    }
+                }
+                output = output + tituloDeUmFilme.get(idFilme) + ":" + maior + "\n";
+                maior = 0.0f;
+                idFilmes.remove(index);
+            }
+            if (output.equals("")) {
+                output = "zerop";
+            }
             long finalTime = System.currentTimeMillis();
-            query = new QueryResult("s",finalTime-initialTime);
+            query = new QueryResult(output,finalTime-initialTime);
         } else if (pergunta.contains("TOP_6_DIRECTORS_WITHIN_FAMILY")) {
             long initialTime = System.currentTimeMillis();
             long finalTime = System.currentTimeMillis();
             query = new QueryResult("s",finalTime-initialTime);
-        } else if (pergunta.contains("GET_TOP_ACTOR_YEAR")) {
+        } else if (pergunta.contains("GET_TOP_ACTOR_YEAR")) { // FEITO
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split("GET_TOP_ACTOR_YEAR");
             String ano = partes[1].trim();
@@ -481,6 +512,7 @@ public class Main {
                 }*/
                 MovieVotes MovieVotes = new MovieVotes(ID, MédiaVotos, NrVotos);
                 idFilmeMediaVotos.put(ID,MédiaVotos);
+                insertIDFilmeGetNumeroVotos.put(ID,NrVotos);
 
                 //GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR
                 if (votacaoMediaFilme.get(MédiaVotos) == null) {
