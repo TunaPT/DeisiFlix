@@ -75,10 +75,10 @@ public class Main {
 
     static HashMap<Integer,String[]> pesquisaPorIDFilme = new HashMap<Integer,String[]>();
 
-
+    //COUNT_ACTORS_3_YEARS
     static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>(); //Key Ano de Filme | Devolve Arraylist com IDs dos filmes       //nomear função para insertDateGetIDFilme
-    static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>();
-    static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();
+    static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>(); //Key ID Filme | Devolve Arraylist com IDs dos participantes no filme
+
 
     //TOP_MOVIES_WITH_GENDER_BIAS
     static HashMap<Integer,String> insertIDActorGetGenero = new HashMap<>(); //Key ID Actor | Devolve Genero Actor
@@ -182,56 +182,40 @@ public class Main {
             query = new QueryResult(Integer.toString(count),finalTime-initialTime);
         } else if (pergunta.contains("COUNT_ACTORS_3_YEARS")) {
 
-            /*static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();  //Key ANO, devolve filmes desse ano
-            static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>(); //Key filme, devolve IDs das pessoas desse filme
-            static HashMap<String,HashSet> pesquisaAnoActor = new HashMap<>();*/
+            /*static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>();  //Key Ano de Filme | Devolve Arraylist com IDs dos filmes
+            static HashMap<Integer,ArrayList> actoresDiferentes2 = new HashMap<>(); //Key ID Filme | Devolve Arraylist com IDs dos participantes no filme*/
+
             long initialTime = System.currentTimeMillis();
             String[] parts = pergunta.split(" ");
-            HashSet<Integer> IDActor = new HashSet<>();
-            int count=0;
-            for (int i=1;i<parts.length;i++) {
-                //System.out.println("IDs Filmes no ano " + parts[i] + ": " + actoresDiferentes.get(parts[i]) + "\n");
-                for (int k=0;k<actoresDiferentes.get(parts[i]).size();k++) {
-                    //System.out.println("IDs Actores participantes no Filme com ID " + actoresDiferentes.get(parts[i]).get(k) + ": " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)));
-                    if (actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)) != null) {
-                        for (int l = 0; l < actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size(); l++) {
-                            //System.out.println("ID Pessoa: " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l));
-                            //IDActor.add((Integer) actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l));
-                            if (pesquisaAnoActor.get(parts[i]) == null) {
-                                pesquisaAnoActor.put(parts[i], new HashSet<Integer>((Integer) actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l)));
-                            } else {
-                                IDActor = pesquisaAnoActor.get(parts[i]);
-                                IDActor.add((Integer) actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).get(l));
-                                pesquisaAnoActor.put(parts[i],IDActor);
+            HashMap<String,ArrayList> insertAnoGetIDsActoresParticipantesEmFilmes = new HashMap<>(); // Key Ano Filme | Devolve Arraylist com IDs dos actores que participaram em filmes desse ano
+            int count = 0;
+            for (int i=1;i<parts.length;i++) { // Para o cumprimento 4
+                ArrayList<Integer> idsFilmes = actoresDiferentes.get(parts[i]); // Devolve um arraylist com os IDs dos filmes de um certo ano
+                ArrayList<Integer> idsActores = new ArrayList<>();
+                for (int k=0;k<idsFilmes.size();k++) { // Vou percorrer o arraylist com os IDs dos filmes de um certo ano
+                    int idFilme = idsFilmes.get(k); // Obtenho o id do filme
+                    ArrayList<Integer> idsParticipantesNoFilme = actoresDiferentes2.get(idFilme); // Obtenho um arraylist com os IDs dos participantes no filme
+                    if (idsParticipantesNoFilme != null) { // Verifico se o arraylist com os IDs dos participantes no filme existe, ou seja, existem participantes
+                        for (int l=0;l<idsParticipantesNoFilme.size();l++) { // Vou percorrer o arraylist com os IDs dos participantes num filme
+                            int idActorParticipante = idsParticipantesNoFilme.get(l); // Obtenho o ID do actor/participante no filme
+                            if (idsActores.contains(idActorParticipante) == false) { // Se já existir o ID do actor nesse ano, não contar mais
+                                idsActores.add(idActorParticipante);
                             }
-                            // Objetivo colocar o ano e um HashSet com os IDs todos dos actores desse ano //VERIFICAR ESTA PARTE AQUI - FALTA ADICIONAR OS IDS A UM UNICO HASHSET
                         }
-                        //System.out.print("SIZE ArrayList: " + actoresDiferentes2.get(actoresDiferentes.get(parts[i]).get(k)).size() + "\n");
-                        //System.out.println();
                     }
                 }
-                //System.out.println("No Ano " + parts[i] + " existem " + actoresDiferentes.get(parts[i]).size() + " actores");
-                //System.out.println("Todos os Actores do Ano: " + parts[i] + ": " + pesquisaAnoActor.get(parts[i]));
-                //System.out.println();
+                insertAnoGetIDsActoresParticipantesEmFilmes.put(parts[i],idsActores);
             }
-            //System.out.println(actoresDiferentes.get(parts[1]).size());
-            for (int i=0;i<actoresDiferentes.get(parts[1]).size();i++) {
-                //System.out.println(actoresDiferentes.get(parts[2]).get(i));
-                if (pesquisaAnoActor.get(parts[2]).contains(pesquisaAnoActor.get(parts[1]).contains(i))) {
-                    System.out.println("zzz");
-                    /*for (int k=0;k<actoresDiferentes.get(parts[1]).size();k++) {
-                        System.out.println("xxx");
-                        if (actoresDiferentes.get(parts[3]).contains(actoresDiferentes.get(parts[1]).get(k))) {
-                            System.out.println("aw");
-                            count++;
-                        }
-                    }*/
+            for (int i=0;i<insertAnoGetIDsActoresParticipantesEmFilmes.get(parts[1]).size();i++) {
+                int idActor = (int) insertAnoGetIDsActoresParticipantesEmFilmes.get(parts[1]).get(i);
+                if (insertAnoGetIDsActoresParticipantesEmFilmes.get(parts[2]).contains(idActor)) {
+                    if (insertAnoGetIDsActoresParticipantesEmFilmes.get(parts[3]).contains(idActor)) {
+                        count++;
+                    }
                 }
             }
             long finalTime = System.currentTimeMillis();
-            //filmesAnos a chave de procura é o nome de autor e devolve um arraylist com os IDs dos filmes
-            //pesquisarPorIDFilme a chave de procura é o ID do filme e devolve um array com o titulo e data
-            query = new QueryResult("s",finalTime-initialTime);
+            query = new QueryResult(Integer.toString(count),finalTime-initialTime);
         } else if (pergunta.contains("TOP_MOVIES_WITH_GENDER_BIAS")) {  // FALTA ORDENAR POR ORDEM DECRESCENTE
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split(" ");
