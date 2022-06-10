@@ -92,7 +92,6 @@ public class Main {
 
     //GET_TOP_N_YEARS_BEST_AVG_VOTES
     static HashSet<String> anoFilmes = new HashSet<>();
-    static HashMap<String,ArrayList> mediaVotosFilmes = new HashMap<>();
     static HashMap<Integer,Float> idFilmeMediaVotos = new HashMap<>(); // Key IDFilme | Devolve Float MediaFilmes
     static HashMap<String,Float> anoPontuacao = new HashMap<>();
 
@@ -288,7 +287,6 @@ public class Main {
             String nFilmes = partes[1].trim();
             String ano = partes[2].trim();
             String output = "";
-
             /*
             //static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>(); //Key Ano de Filme | Devolve Arraylist com IDs dos filmes
             //static HashMap<Integer,ArrayList> actoresDeUmFilme = new HashMap<>(); // Key IDFilme | Devolve Arraylist com IDs dos participantes no filme
@@ -373,20 +371,29 @@ public class Main {
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split("GET_TOP_N_YEARS_BEST_AVG_VOTES");
             String topValue = partes[1].trim();
-            //mediaVotosFilmes
-            //idFilmeMediaVotos
-            float mediaAno = 0.0f;
-            String[] anoFilmesArray = anoFilmes.toArray(new String[anoFilmes.size()]);
-            for (int i=0; i<anoFilmesArray.length;i++) { //anoFilmes dará o ano em questão
-                ArrayList idsFilmes = mediaVotosFilmes.get(anoFilmesArray[i]);
-                for (int k=0;k<idsFilmes.size();k++) {
-                    int idFilme = (int) idsFilmes.get(k); //dá o id do filme
-                    float mediaVotos = idFilmeMediaVotos.get(idFilme);  //media de votos do filme
-                    mediaAno = mediaAno + mediaVotos;
+
+            /*
+            static HashSet<String> anoFilmes = new HashSet<>(); // Inseria todos os anos existentes aqui
+            static HashMap<String,ArrayList> mediaVotosFilmes = new HashMap<>(); // Key Ano Filme | Devolve Arraylist com os filmes desse ano
+            static HashMap<Integer,Float> idFilmeMediaVotos = new HashMap<>(); // Key IDFilme | Devolve Float MediaFilmes
+            static HashMap<String,Float> anoPontuacao = new HashMap<>(); // Key Ano | Devolve a Media do Ano
+             */
+
+            String[] anoFilmesArray = anoFilmes.toArray(new String[anoFilmes.size()]); // Transformo o HashSet com todos os anos existentes num array para percorrer
+            for (int i=0; i<anoFilmesArray.length;i++) { // Percorro o array com os vários anos de filmes
+                String ano = anoFilmesArray[i]; // Obtenho um ano
+                ArrayList<Integer> idsFilmes = actoresDiferentes.get(ano); // Obtenho um arraylist com os IDs dos filmes desse ano
+                float somaVotosAno = 0.0f;
+                for (int k=0;k<idsFilmes.size();k++) { // Percorro o arraylist com os IDs dos filmes para um certo ano
+                    int idFilme = idsFilmes.get(k); // Obtenho o ID do filme de um determinado ano
+                    float mediaVotos = idFilmeMediaVotos.get(idFilme); // Obtenho a média de votos do filme de um certo ano com base no id do filme
+                    somaVotosAno = somaVotosAno + mediaVotos; // Faço soma total dos votos dos filmes todos de um certo ano
                 }
-                anoPontuacao.put(anoFilmesArray[i], mediaAno/idsFilmes.size());
-                mediaAno = 0.0f;
+                float mediaAno = somaVotosAno/idsFilmes.size(); // Obtenho a media de votos de um certo ano
+                //System.out.println("ANO " + ano + " - Media: " + mediaAno);
+                anoPontuacao.put(anoFilmesArray[i], mediaAno); // Guardo os dados num HashMap com Key Ano e devolve a media do ano
             }
+
             String stringQuery = "";
             String ano = anoFilmesArray[0];
             for (int i=0; i<Integer.parseInt(topValue);i++) {
@@ -399,12 +406,10 @@ public class Main {
                         }
                     }
                 }
-                //System.out.println(anoPontuacao.get("1902"));
                 if (i+1 != Integer.parseInt(topValue)) {
-                    stringQuery = stringQuery + ano + ":" + anoPontuacao.get(ano) + "\n";
+                    stringQuery = stringQuery + ano + ":" + Math.round(anoPontuacao.get(ano) * 100)/100.0 + "\n";
                 } else {
-                    //String.format("%.2f",anoPontuacao.get(ano))
-                    stringQuery = stringQuery + ano + ":" + anoPontuacao.get(ano) + "\n"; //aplicar com apenas duas casas decimais
+                    stringQuery = stringQuery + ano + ":" + Math.round(anoPontuacao.get(ano) * 100)/100.00 + "\n";
                 }
                 anoPontuacao.remove(ano);
             }
@@ -419,30 +424,40 @@ public class Main {
             String[] partes = pergunta.split(" ");
             String topNFilmes = partes[1].trim();
             String ano = partes[2].trim();
-            ArrayList<Integer> idFilmes = actoresDiferentes.get(ano); // idFiles = Arraylist com IDs dos filmes em inteiros
             String output = "";
-            ArrayList<String> outputFinal = new ArrayList<>();
-            for (int i=0;i<Integer.parseInt(topNFilmes);i++) {
-                for (int k=0;k<idFilmes.size();k++) {
-                    if (actoresDeUmFilme.get(idFilmes.get(k)) != null) {
-                        int numVotos = insertIDFilmeGetNumeroVotos.get(idFilmes.get(k));
-                        int idFilme = idFilmes.get(k);
-                        outputFinal.add(tituloDeUmFilme.get(idFilme) + ":" + idFilmeMediaVotos.get(idFilmes.get(k))/numVotos);
-                        //int numActoresParticipantesFilme = actoresDeUmFilme.get(idFilmes.get(k)).size(); //Numero atores participantes no filme
-                        /*if (idFilmeMediaVotos.get(idFilmes.get(k))/numVotos > maior) {
-                            maior = idFilmeMediaVotos.get(idFilmes.get(k))/numVotos;
-                            idFilme = idFilmes.get(k);
-                            index = k;
-                        }*/
+
+            ArrayList<Integer> idFilmes = actoresDiferentes.get(ano); // Insiro o Ano e recebo um arraylist com os IDs dos filmes desse ano
+            HashMap<Integer,Float> insertIDFilmeGetRacio = new HashMap<>();
+
+            for (int i=0;i<idFilmes.size();i++) { // Percorro o arraylist com os IDs dos filmes do ano escolhido
+                int idFilme = idFilmes.get(i);
+                ArrayList<String> listActoresFilme = apenasActoresDeUmFilme.get(idFilme);
+                if (listActoresFilme != null) {
+                    int numeroActoresFilme = listActoresFilme.size();
+                    float mediaFilme = idFilmeMediaVotos.get(idFilme);
+                    float racioFilme = mediaFilme / numeroActoresFilme;
+                    insertIDFilmeGetRacio.put(idFilme, racioFilme);
+                }
+            }
+            for (int i=0;i<Integer.parseInt(topNFilmes);i++) { // Percorro o ciclo n vezes o top de Filmes que pretendo
+                float pivotRacio = 0.0f;
+                int idFilmeAtual = 0;
+                for (int k=0;k<idFilmes.size();k++) { // Percorro o arraylist com os IDs dos filmes do ano escolhido
+                    int idFilme = idFilmes.get(k);
+                    if (insertIDFilmeGetRacio.get(idFilme) != null) {
+                        float racioFilme = insertIDFilmeGetRacio.get(idFilme);
+                        if (racioFilme > pivotRacio) {
+                            idFilmeAtual = idFilme;
+                            pivotRacio = racioFilme;
+                        }
                     }
                 }
-                //output = output + tituloDeUmFilme.get(idFilme) + ":" + maior + "\n";
-                //maior = 0.0f;
-                //idFilmes.remove(index);
-            }
-            for (int i=0;i<Integer.parseInt(topNFilmes);i++) {
-                ArrayList<String> last = quickSort2(outputFinal);
-                output = output + last.get(i) + "\n";
+                if (i+1 == Integer.parseInt(topNFilmes)) {
+                    output = output + tituloDeUmFilme.get(idFilmeAtual) + ":" + pivotRacio;
+                } else {
+                    output = output + tituloDeUmFilme.get(idFilmeAtual) + ":" + pivotRacio + "\n";
+                }
+                insertIDFilmeGetRacio.remove(idFilmeAtual);
             }
             if (output.equals("")) {
                 output = "zerop";
@@ -800,13 +815,6 @@ public class Main {
 
                 //GET_TOP_N_YEARS_BEST_AVG_VOTES
                 anoFilmes.add(dateFormat[2]);
-                if (mediaVotosFilmes.get(dateFormat[2]) == null) {
-                    mediaVotosFilmes.put(dateFormat[2],new ArrayList<>(ID));
-                } else {
-                    ArrayList<Integer> arrayList = mediaVotosFilmes.get(dateFormat[2]);
-                    arrayList.add(ID);
-                    mediaVotosFilmes.put(dateFormat[2],arrayList);
-                }
 
                 //GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR
                 tituloDeUmFilme.put(ID,Título);
