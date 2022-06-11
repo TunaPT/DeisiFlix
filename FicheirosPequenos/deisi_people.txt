@@ -1,0 +1,10 @@
+ACTOR,11701,Angelina Jolie,F,1995
+ACTOR,6384,Keanu Reeves,M,603
+ACTOR,11701,Angelina Jolie,F,10428
+ACTOR,6856,Kurt Russell,M,6978
+ACTOR,2109,Kim Cattrall,F,6978
+DIRECTOR,12786,Simon West,-,1995
+DIRECTOR,9339,Lilly Wachowski,-,603
+DIRECTOR,9340,Lana Wachowski,-,603
+DIRECTOR,1978,Iain Softley,-,10428
+DIRECTOR,96372,Tom Clegg,M,69787

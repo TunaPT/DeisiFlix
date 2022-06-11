@@ -1,0 +1,12 @@
+Action,603
+Science Fiction,603
+Action,6978
+Romance,770
+Adventure,76341
+Science Fiction,76341
+Thriller,76341
+Drama,10428
+Crime,10428
+Thriller,10428
+Action,10428
+Comedy,6978

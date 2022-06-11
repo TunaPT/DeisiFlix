@@ -492,7 +492,27 @@ public class Main {
     static boolean readFiles = false;
 
     static void lerFicheiros() throws IOException {
-        if (readFiles == false) {
+        dicionario = new HashMap<>();
+        filmesAno = new HashMap<>();
+        pesquisaPorIDFilme = new HashMap<>();
+        insertIDFilmeGetGenerosFilme = new HashMap<>();
+        actoresDiferentes = new HashMap<>();
+        actoresDiferentes2 = new HashMap<>();
+        apenasActoresDeUmFilme = new HashMap<>();
+        insertIDActorGetGenero = new HashMap<>();
+        actoresDeUmFilme = new HashMap<>();
+        tituloDeUmFilme = new HashMap<>();
+        dataDeUmFilme = new HashMap<>();
+        votacaoMediaFilme = new HashMap<>();
+        anoFilmes = new HashSet<>();
+        idFilmeMediaVotos = new HashMap<>();
+        anoPontuacao = new HashMap<>();
+        insertIDFilmeGetNumeroVotos = new HashMap<>();
+        topActorYear = new HashMap<>();
+        getPersonNameById = new HashMap<>();
+        insertIDFilmeGetIDDirector = new HashMap<>();
+        insertDirectorIDGetName = new HashMap<>();
+        //if (readFiles == false) {
             deisiPeople = readerDeisiPeople();
             deisiGenres = readerDeisiGenres();
             deisiMovieVotes = readerDeisiMovieVotes(linhasVálidas);
@@ -500,8 +520,9 @@ public class Main {
             linhasVálidas = moviesValid.listaFilmes;
             linhasIgnoradas = moviesValid.linhasIgnoradas;
             readFiles = true;
-            //System.out.println(getLinhasIgnoradas("deisi_movies.txt").size());
-        }
+            //System.out.println(getFilmes());
+            //System.out.println(getLinhasIgnoradas("deisi_movies.txt").size()); //TUNA
+        //}
     }
     static ArrayList<Filme> getFilmes() { return linhasVálidas; }
 
@@ -620,7 +641,6 @@ public class Main {
                     }
                     insertDirectorIDGetName.put(ID,NomePessoa);
                 }
-
             } else {
                 linhasIgnoradas.add(linha);
             }
@@ -732,8 +752,6 @@ public class Main {
                         }
                     }
                 }
-                //    static HashMap<Integer,ArrayList> apenasActoresDeUmFilme = new HashMap<>(); // Key IDFilme | Devolve Arraylist com IDs dos actores no filme
-                //    static HashMap<Integer,String> insertIDActorGetGenero = new HashMap<>(); //Key ID Actor | Devolve Genero Actor
 
                 int numRealizadores = 0;
                 if (insertIDFilmeGetIDDirector.get(ID) != null) {
@@ -743,14 +761,22 @@ public class Main {
                 if (insertIDFilmeGetGenerosFilme.get(ID) != null) {
                     numGeneros = insertIDFilmeGetGenerosFilme.get(ID).size();
                 }
+                int numVotos = 0;
+                if (insertIDFilmeGetNumeroVotos.get(ID) != null) {
+                    numVotos = insertIDFilmeGetNumeroVotos.get(ID);
+                }
+                double mediaVotos = 0;
+                if (idFilmeMediaVotos.get(ID) != null) {
+                    mediaVotos = idFilmeMediaVotos.get(ID);
+                }
 
                 Filme filme = new Filme();
                 filme.id = ID;
                 filme.titulo = Título;
                 filme.orcamento = Orçamento;
                 filme.dataDeLancamento = Data;
-                filme.nrDeVotos = insertIDFilmeGetNumeroVotos.get(ID);
-                filme.mediaDeVotos = idFilmeMediaVotos.get(ID);
+                filme.nrDeVotos = numVotos;
+                filme.mediaDeVotos = mediaVotos;
                 filme.generos = numGeneros;
                 filme.realizadores = numRealizadores;
                 filme.numActoresMasculinos = masculino;
@@ -787,8 +813,8 @@ public class Main {
                 tituloDeUmFilme.put(ID,Título);
                 String dateFormatFinal = String.join("-", dateFormat[2], dateFormat[1], dateFormat[0]);
                 dataDeUmFilme.put(ID,dateFormatFinal);
-
             } else {
+                //System.out.println(linha); //TUNA
                 linhasIgnoradas.add(linha);
             }
         }
@@ -918,12 +944,6 @@ class Filme {
         this.numActoresMasculinos = numActoresMasculinos;
         this.numActoresFemininos = numActoresFemininos;
     }
-
-    //static HashMap<Integer,ArrayList> apenasActoresDeUmFilme = new HashMap<>(); // Key IDFilme | Devolve Arraylist com IDs dos actores no filme
-    //    static HashMap<Integer,String> insertIDActorGetGenero = new HashMap<>(); //Key ID Actor | Devolve Genero Actor
-
-    //Tuna
-    // Nr. de Género(s) | Nr. de Realizadores | Nr. de Actores (masculinos) | Nr.de Actrizes (femininos)
 
     public String toString() {
         String[] dateFormat = this.dataDeLancamento.split("-");
