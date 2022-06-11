@@ -36,6 +36,7 @@ public class Main {
 
     static HashMap<Integer,String[]> pesquisaPorIDFilme = new HashMap<Integer,String[]>();
 
+    //GET_MOST_WATCHED_GENRE_YEAR
     static HashMap<Integer,ArrayList> insertIDFilmeGetGenerosFilme = new HashMap<>(); //Key IDFilme | Devolve o numero de generos do filme (ação etc...)
 
     //COUNT_ACTORS_3_YEARS
@@ -75,6 +76,8 @@ public class Main {
     static ArrayList<String> deisiPeople = new ArrayList<String>();
     static ArrayList<String> deisiGenres = new ArrayList<String>();
     static ArrayList<String> deisiMovieVotes = new ArrayList<String>();
+
+
 
     public static ArrayList<String> quickSort(ArrayList<String> list) {
 
@@ -472,7 +475,7 @@ public class Main {
             String IDFilme = partes[3].trim();
             new DeisiPeople("ACTOR", Integer.parseInt(IDActor), NomeActor, GeneroActor, Integer.parseInt(IDFilme));
             long finalTime = System.currentTimeMillis();
-            query = new QueryResult("s",initialTime-finalTime);
+            query = new QueryResult("s",finalTime-initialTime);
         } else if (pergunta.contains("REMOVE_ACTOR")) {
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split(" ");
@@ -482,12 +485,44 @@ public class Main {
         } else if (pergunta.contains("GET_DUPLICATE_LINES_YEAR")) {
             long initialTime = System.currentTimeMillis();
             long finalTime = System.currentTimeMillis();
-            query = new QueryResult("s",initialTime-finalTime);
+            query = new QueryResult("s",finalTime-initialTime);
+        } else if (pergunta.contains("FREQUENCY_OF_GENRE_YEAR")) {
+            //static HashMap<String,ArrayList> actoresDiferentes = new HashMap<>(); //Key Ano de Filme | Devolve Arraylist com IDs dos filmes
+            //static HashMap<Integer,ArrayList> insertIDFilmeGetGenerosFilme = new HashMap<>(); //Key IDFilme | Devolve o numero de generos do filme (ação etc...)
+            long initialTime = System.currentTimeMillis();
+            String[] partes = pergunta.split(" ");
+            String ano = partes[1];
+            String genre = partes[2];
+            HashMap<String,ArrayList> listGenresAno = new HashMap<>();
+            ArrayList<Integer> idFilmes = actoresDiferentes.get(ano);
+            for (int i = 0; i < idFilmes.size(); i++){
+                int idFilme = idFilmes.get(i);
+                ArrayList<String> listGenreFilme = insertIDFilmeGetGenerosFilme.get(idFilme);
+                if (listGenreFilme != null) {
+                    for (int k = 0; k < listGenreFilme.size(); k++) {
+                        String genreFilme = listGenreFilme.get(k);
+                        if (listGenresAno.get(ano) == null) {
+                            ArrayList<String> arrayList = new ArrayList<>();
+                            arrayList.add(genreFilme);
+                            listGenresAno.put(ano, arrayList);
+                        } else {
+                            ArrayList<String> arrayList = listGenresAno.get(ano);
+                            arrayList.add(genreFilme);
+                            listGenresAno.put(ano, arrayList);
+                        }
+                    }
+                }
+            }
+            ArrayList<String> genresTotaisAno = listGenresAno.get(ano);
+            int count = Collections.frequency(genresTotaisAno,genre);
+            String output = "Exist this Movie Genre: " + count ;
+            long finalTime = System.currentTimeMillis();
+            query = new QueryResult(output,finalTime-initialTime);
         }
         return query;
     }
     public static String getVideoURL() { return null; }
-    public static String getCreativeQuery() { return null; }
+    public static String getCreativeQuery() { return "FREQUENCY_OF_GENRE_YEAR"; }
 
     static boolean readFiles = false;
 
