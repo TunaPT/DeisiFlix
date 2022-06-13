@@ -493,28 +493,9 @@ public class Main {
                 } else if (GeneroActor.equals("F")) {
                     todosFilmes.get(IDFilme).numActoresFemininos = todosFilmes.get(IDFilme).numActoresFemininos + 1;
                 }
-                //dicionario.put(NomeActor, 1);
-                //
                 ArrayList<Integer> idFilmesPessoa = new ArrayList<>();
                 idFilmesPessoa.add(IDFilme);
                 filmesAno.put(NomeActor,idFilmesPessoa);
-                //
-
-                /*ArrayList<Integer> idsActores = new ArrayList<>();
-                idsActores.add(IDActor);
-                actoresDiferentes2.put(IDFilme, idsActores);
-                //TOP_MOVIES_WITH_GENDER_BIAS
-                ArrayList<Integer> apenasActores = new ArrayList<>();
-                apenasActores.add(IDActor);
-                apenasActoresDeUmFilme.put(IDFilme, apenasActores);
-                //
-                insertIDActorGetGenero.put(IDActor,GeneroActor);
-                //GET_RECENT_TITLE_SAME_AVG_VOTES_ONE_SHARED_ACTOR
-                ArrayList<Integer> actoresFilme = new ArrayList<>();
-                actoresFilme.add(IDActor);
-                actoresDeUmFilme.put(IDFilme,actoresFilme);
-                //GET_TOP_ACTOR_YEAR
-                getPersonNameById.put(IDActor,NomeActor);*/
                 output = "OK";
             }
             long finalTime = System.currentTimeMillis();
@@ -524,8 +505,6 @@ public class Main {
             String[] partes = pergunta.split(" ");
             int IDActor = Integer.parseInt(partes[1]);
             String output = "";
-            //static HashMap<Integer,ArrayList> filmesActor = new HashMap<>();
-            // Key IDActor | Devolve arraylist com os ids dos filmes em que participou
             if (filmesActor.get(IDActor) != null) {
                 output = "OK";
                 ArrayList<Integer> listIDsFilmes = filmesActor.get(IDActor); // Devolve lista de filmes do actor
@@ -533,49 +512,24 @@ public class Main {
                 String GeneroActor = insertIDActorGetGenero.get(IDActor);
                 insertIDActorGetGenero.remove(IDActor);
                 ArrayList<Integer> idsFilmesJaInseridos = new ArrayList<>();
-                for (int i=0;i<listIDsFilmes.size();i++) { // Percorro a lista de filmes do actor
-
-                    int idFilme = listIDsFilmes.get(i); // Obtenho o id de cada filme um a um
-                    
-                    /*ArrayList<Integer> idsParticipantes = actoresDiferentes2.get(idFilme);
-                    int index = idsParticipantes.indexOf(IDActor);
-                    System.out.println(index);
-                    if (index != -1) {
-                        idsParticipantes.remove(index);
-                        actoresDiferentes2.put(idFilme, idsParticipantes);
-                    }
-
-                    ArrayList<Integer> apenasActores = apenasActoresDeUmFilme.get(idFilme);
-                    index = apenasActores.indexOf(IDActor);
-                    if (index != -1) {
-                        apenasActores.remove(index);
-                        apenasActoresDeUmFilme.put(idFilme, apenasActores);
-                    }
-
-                    ArrayList<Integer> actoresFilme = actoresDeUmFilme.get(idFilme);
-                    index = actoresFilme.indexOf(IDActor);
-                    if (index != -1) {
-                        actoresFilme.remove(index);
-                        actoresDeUmFilme.put(idFilme, actoresFilme);
-                    }*/
-
-                    //Um actor pode estar associado a um filme mais que uma vez ?
-
+                for (int i=0;i<listIDsFilmes.size();i++) {
+                    int idFilme = listIDsFilmes.get(i);
                     if (idsFilmesJaInseridos.contains(idFilme) == false) {
                         if (GeneroActor.equals("M")) {
-                            todosFilmes.get(idFilme).numActoresMasculinos = todosFilmes.get(idFilme).numActoresMasculinos - 1;
+                            todosFilmes.get(idFilme).numActoresMasculinos =
+                                    todosFilmes.get(idFilme).numActoresMasculinos - 1;
                         }
                         if (GeneroActor.equals("F")) {
-                            todosFilmes.get(idFilme).numActoresFemininos = todosFilmes.get(idFilme).numActoresFemininos - 1;
+                            todosFilmes.get(idFilme).numActoresFemininos =
+                                    todosFilmes.get(idFilme).numActoresFemininos - 1;
                         }
                         idsFilmesJaInseridos.add(idFilme);
                     }
                 }
                 String nomeActor = getPersonNameById.get(IDActor);
-                dicionario.remove(nomeActor);
-                //Key NomeActor | Devolva lista com os filmes dele //ativei esta
+                dicionario.remove(nomeActor); //necessária
                 filmesAno.remove(nomeActor);
-                getPersonNameById.remove(IDActor); // Key ID Actor, devolve nome //ativei esta
+                getPersonNameById.remove(IDActor);
             } else {
                 output = "Erro";
             }
@@ -614,6 +568,8 @@ public class Main {
             String output = "Exist this Movie Genre: " + count ;
             long finalTime = System.currentTimeMillis();
             query = new QueryResult(output,finalTime-initialTime);
+        } else {
+            query = null;
         }
         return query;
     }
@@ -679,8 +635,12 @@ public class Main {
         String line = in.nextLine();
         while (line != null && !line.equals("QUIT")) {
             QueryResult resultado = perguntar(line);
-            System.out.println(resultado.valor);
-            System.out.println("(demorou " + resultado.tempo + " ms)");
+            if (resultado != null) {
+                System.out.println(resultado.valor);
+                System.out.println("(demorou " + resultado.tempo + " ms)");
+            } else {
+                System.out.println("Pergunta desconhecida. Tente novamente.");
+            }
             line = in.nextLine();
         }
     }
