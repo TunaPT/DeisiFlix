@@ -481,11 +481,7 @@ public class Main {
             String GeneroActor = parts[2].trim();
             int IDFilme = Integer.parseInt(parts[3].trim());
             String output = "";
-            //arrayListTodosFilmes.add(NomePessoa + "," + Género + "," + IDFilme);
-            //todosFilmes.put(ID,arrayListTodosFilmes); // Adiciona o filme e os seus dados ao hashmap
             if (todosFilmes.get(IDFilme) == null || insertIDActorGetGenero.get(IDActor) != null) {
-                //System.out.println(todosFilmes.get(IDFilme));
-                //System.out.println(insertIDActorGetGenero.get(IDActor));
                 output = "Erro";
             } else {
                 if (GeneroActor.equals("M")) {
@@ -495,7 +491,13 @@ public class Main {
                 }
                 ArrayList<Integer> idFilmesPessoa = new ArrayList<>();
                 idFilmesPessoa.add(IDFilme);
-                filmesAno.put(NomeActor,idFilmesPessoa);
+                if (filmesAno.get(NomeActor) == null) {
+                    filmesAno.put(NomeActor, idFilmesPessoa);
+                } else {
+                    ArrayList<Integer> idsFilmes = filmesAno.get(NomeActor);
+                    idsFilmes.add(IDFilme);
+                    filmesAno.put(NomeActor, idsFilmes);
+                }
                 output = "OK";
             }
             long finalTime = System.currentTimeMillis();
@@ -539,33 +541,59 @@ public class Main {
             long initialTime = System.currentTimeMillis();
             long finalTime = System.currentTimeMillis();
             query = new QueryResult("s",finalTime-initialTime);
-        } else if (pergunta.contains("FREQUENCY_OF_ACTION_GENRE_YEAR")) {
+        } else if (pergunta.contains("GET_TOP3_MOVIES_GENRE_YEAR")) {
             long initialTime = System.currentTimeMillis();
             String[] partes = pergunta.split(" ");
             String ano = partes[1];
-            HashMap<String,ArrayList> listGenresAno = new HashMap<>();
+            HashMap<String,Integer> listGenresAno = new HashMap<>();
             ArrayList<Integer> idFilmes = actoresDiferentes.get(ano);
-            for (int i = 0; i < idFilmes.size(); i++){
-                int idFilme = idFilmes.get(i);
-                ArrayList<String> listGenreFilme = insertIDFilmeGetGenerosFilme.get(idFilme);
-                if (listGenreFilme != null) {
-                    for (int k = 0; k < listGenreFilme.size(); k++) {
-                        String genreFilme = listGenreFilme.get(k);
-                        if (listGenresAno.get(ano) == null) {
-                            ArrayList<String> arrayList = new ArrayList<>();
-                            arrayList.add(genreFilme);
-                            listGenresAno.put(ano, arrayList);
-                        } else {
-                            ArrayList<String> arrayList = listGenresAno.get(ano);
-                            arrayList.add(genreFilme);
-                            listGenresAno.put(ano, arrayList);
+            HashSet<String> generosSemRepetidos = new HashSet<>();
+            String output = "";
+            if (idFilmes != null) {
+                for (int i=0; i<idFilmes.size(); i++) {
+                    int idFilme = idFilmes.get(i);
+                    ArrayList<String> listGenreFilme = insertIDFilmeGetGenerosFilme.get(idFilme);
+                    if (listGenreFilme != null) {
+                        for (int k = 0; k < listGenreFilme.size(); k++) {
+                            String genreFilme = listGenreFilme.get(k);
+                            generosSemRepetidos.add(genreFilme);
+                            if (listGenresAno.get(genreFilme) == null) {
+                                listGenresAno.put(genreFilme, 1);
+                            } else {
+                                listGenresAno.put(genreFilme, listGenresAno.get(genreFilme) + 1);
+                            }
                         }
                     }
                 }
+                int index = 3;
+                if (generosSemRepetidos.size() < 3) {
+                    index = generosSemRepetidos.size();
+                }
+                for (int i = 0; i < index; i++) {
+                    int maiorNumVezes = 0;
+                    int posicao = 0;
+                    if (generosSemRepetidos.size() > 0) {
+                        for (int k = 0; k < generosSemRepetidos.size(); k++) {
+                            int numVezes = listGenresAno.get(generosSemRepetidos.toArray()[k]);
+                            if (numVezes > maiorNumVezes) {
+                                maiorNumVezes = numVezes;
+                                posicao = k;
+                            }
+                        }
+                        output = output + generosSemRepetidos.toArray()[posicao] +
+                                " está presente " + maiorNumVezes + " vez";
+                        if (maiorNumVezes != 1) {
+                            output = output + "es";
+                        }
+                        if (i + 1 != index) {
+                            output = output + "\n";
+                        }
+                        generosSemRepetidos.remove(generosSemRepetidos.toArray()[posicao]);
+                    }
+                }
+            } else {
+                output = "Não existem filmes neste ano";
             }
-            ArrayList<String> genresTotaisAno = listGenresAno.get(ano);
-            int count = Collections.frequency(genresTotaisAno,"ACTION");
-            String output = "Exist this Movie Genre: " + count ;
             long finalTime = System.currentTimeMillis();
             query = new QueryResult(output,finalTime-initialTime);
         } else {
@@ -574,7 +602,7 @@ public class Main {
         return query;
     }
     public static String getVideoURL() { return null; }
-    public static String getCreativeQuery() { return "FREQUENCY_OF_ACTION_GENRE_YEAR"; }
+    public static String getCreativeQuery() { return "GET_TOP3_MOVIES_GENRE_YEAR"; }
 
     static boolean readFiles = false;
 
