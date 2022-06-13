@@ -7,6 +7,16 @@ import java.util.HashSet;
 
 public class PerguntasQueries {
     //FUNÇÕES PERGUNTAR - QUERIES
+
+    static boolean functionMoviesWithActors(int length, int k, String[] parts) {
+        for (int i=2;i<length;i++) {
+            if (Main.filmesAno.get(parts[i]).contains(Main.filmesAno.get(parts[0]).get(k)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static QueryResult countMoviesActorFunction(String pergunta, QueryResult query) {
         long initialTime = System.currentTimeMillis();
         String[] parts = pergunta.split("COUNT_MOVIES_ACTOR");
@@ -71,7 +81,7 @@ public class PerguntasQueries {
         if (parts.length > 1) {
             for (int k=0; k<Main.filmesAno.get(parts[0]).size(); k++) {
                 if (Main.filmesAno.get(parts[1]).contains(Main.filmesAno.get(parts[0]).get(k))) {
-                    if (Main.functionMoviesWithActors(parts.length, k, parts) == true) {
+                    if (functionMoviesWithActors(parts.length, k, parts) == true) {
                         count++;
                     }
                 }
@@ -164,7 +174,7 @@ public class PerguntasQueries {
             }
         }
         for (int i=0;i<Integer.parseInt(nFilmes);i++) {
-            ArrayList<String> last = Main.quickSort(outputFinal);
+            ArrayList<String> last = Ordenacao.quickSort(outputFinal);
             output = output + last.get(i) + "\n";
         }
         long finalTime = System.currentTimeMillis();
@@ -279,7 +289,7 @@ public class PerguntasQueries {
             }
         }
 
-        Main.quickSortPorRacio(dados);
+        Ordenacao.quickSortPorRacio(dados);
         boolean primeiroOutput=true;
 
         for (int i=0, posicao = dados.size() - 1;i<Integer.parseInt(topNFilmes) && i<dados.size();i++,posicao--) {
@@ -308,15 +318,15 @@ public class PerguntasQueries {
         long initialTime = System.currentTimeMillis();
         String[] partes = pergunta.split("GET_TOP_ACTOR_YEAR");
         String ano = partes[1].trim();
-        ArrayList<Integer> arrayList = Main.topActorYear.get(ano);
+        ArrayList<Integer> arrayListIDsFilmes = Main.topActorYear.get(ano);
         ArrayList<Integer> arrayListIDsPessoa = new ArrayList<>();
-        for (int i=0;i<arrayList.size();i++) {
-            if (Main.actoresDiferentes2.get(arrayList.get(i)) != null) {
-                for (int k = 0; k < Main.actoresDiferentes2.get(arrayList.get(i)).size(); k++) {
-                    arrayListIDsPessoa.add((Integer) Main.actoresDiferentes2.get(arrayList.get(i)).get(k));
+        for (int i=0;i<arrayListIDsFilmes.size();i++) {
+            int idFilme = arrayListIDsFilmes.get(i);
+            if (Main.actoresDiferentes2.get(idFilme) != null) {
+                for (int k = 0; k < Main.actoresDiferentes2.get(idFilme).size(); k++) {
+                    arrayListIDsPessoa.add((Integer) Main.actoresDiferentes2.get(idFilme).get(k));
                 }
             }
-            Main.actoresDiferentes2.get(arrayList.get(i)); // Arraylist
         }
         int maior = Collections.frequency(arrayListIDsPessoa,arrayListIDsPessoa.get(0));
         int id = arrayListIDsPessoa.get(0);
@@ -328,7 +338,7 @@ public class PerguntasQueries {
         }
         String nome = Main.getPersonNameById.get(id);
         long finalTime = System.currentTimeMillis();
-        query = new QueryResult(nome + ";" + Integer.toString(maior),finalTime-initialTime);
+        query = new QueryResult(nome + ";" + maior,finalTime-initialTime);
         return query;
     }
 
@@ -407,8 +417,24 @@ public class PerguntasQueries {
 
     public static QueryResult getDuplicateLinesYearFunction(String pergunta, QueryResult query) {
         long initialTime = System.currentTimeMillis();
+        String[] partes = pergunta.split(" ");
+        String ano = partes[1];
+        ArrayList<String> duplicatedLinesData = Main.infoDuplicatedLines;
+        String output = "";
+        for (int i=0;i<duplicatedLinesData.size();i++) {
+            String[] outrasPartes = duplicatedLinesData.get(i).split(":");
+            int idFilme = Integer.parseInt(outrasPartes[2]);
+            String anoFilme = Main.dataDeUmFilme.get(idFilme);
+            if (anoFilme != null) {
+                String[] dateFormat = anoFilme.split("-");
+                anoFilme = dateFormat[0];
+                if (anoFilme.equals(ano)) {
+                    output = output + duplicatedLinesData.get(i) + "\n";
+                }
+            }
+        }
         long finalTime = System.currentTimeMillis();
-        query = new QueryResult("s",finalTime-initialTime);
+        query = new QueryResult(output,finalTime-initialTime);
         return query;
     }
 
@@ -468,5 +494,84 @@ public class PerguntasQueries {
         long finalTime = System.currentTimeMillis();
         query = new QueryResult(output,finalTime-initialTime);
         return query;
+    }
+}
+
+//Algoritmos de Ordenação
+
+class Ordenacao {
+    public static ArrayList<String> quickSort(ArrayList<String> list) {
+
+        if (list.isEmpty()) {
+            return list;
+        }
+        ArrayList<String> sorted;
+        ArrayList<String> smaller = new ArrayList<String>();
+        ArrayList<String> greater = new ArrayList<String>();
+        String[] parts = list.get(0).split(":");
+        int pivot = Integer.parseInt(parts[parts.length - 1]);
+        int i;
+        int j;
+        for (i = 1; i < list.size(); i++) {
+            String[] parts2 = list.get(i).split(":");
+            j = Integer.parseInt(parts2[parts2.length - 1]);
+            if (j > pivot) {
+                smaller.add(list.get(i));
+            } else {
+                greater.add(list.get(i));
+            }
+        }
+        smaller = quickSort(smaller);
+        greater = quickSort(greater);
+        smaller.add(list.get(0));
+        smaller.addAll(greater);
+        sorted = smaller;
+
+        return sorted;
+    }
+
+    // Partition do 'quickSortPorRacio'
+    private static int paritionPorRacio(ArrayList<RacioFilme> movies, int left, int right) {
+        RacioFilme pivot = movies.get(right);
+        int leftIndex = left;
+        int rightIndex = right - 1;
+
+        while (leftIndex <= rightIndex) {
+            if (movies.get(leftIndex).racio > pivot.racio && movies.get(rightIndex).racio < pivot.racio) {
+                RacioFilme temp = movies.get(leftIndex);
+                movies.set(leftIndex, movies.get(rightIndex));
+                movies.set(rightIndex, temp);
+            }
+
+            if (movies.get(leftIndex).racio <= pivot.racio) {
+                leftIndex++;
+            }
+
+            if (movies.get(rightIndex).racio >= pivot.racio) {
+                rightIndex--;
+            }
+        }
+
+        movies.set(right, movies.get(leftIndex));
+        movies.set(leftIndex, pivot);
+        return leftIndex;
+    }
+
+    // QuickSort - Ordena um ArrayList com objetos da classe 'RacioFilme' pelo racio (double)
+    private static ArrayList<RacioFilme> quicksortPorRacio(
+            ArrayList<RacioFilme> movies, int left, int right
+    ) {
+        if (left < right) {
+            int pivotPos = paritionPorRacio(movies, left, right - 1);
+
+            movies = quicksortPorRacio(movies, left, pivotPos);
+            movies = quicksortPorRacio(movies, pivotPos + 1, right);
+        }
+        return movies;
+    }
+
+    // Method overloading do 'quickSortPorRacio'
+    public static void quickSortPorRacio(ArrayList<RacioFilme> movies) {
+        quicksortPorRacio(movies, 0, movies.size());
     }
 }
