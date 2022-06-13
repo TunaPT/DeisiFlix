@@ -32,56 +32,57 @@ public class TestFilme {
 
     @Test
     public void testCountMoviesWithActorsQuery() {
-        QueryResult result = Main.perguntar("COUNT_MOVIES_WITH_ACTORS");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("COUNT_MOVIES_WITH_ACTORS Tom Cruise;Angelina Jolie");
+        assertEquals("0",result.valor);
     }
 
     @Test
     public void testCountActors3YearsQuery() {
-        QueryResult result = Main.perguntar("COUNT_ACTORS_3_YEARS");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("COUNT_ACTORS_3_YEARS 1920 1930 1940");
+        assertEquals("7",result.valor);
     }
 
     @Test
     public void testTopMoviesWithGenderBiasQuery() {
-        QueryResult result = Main.perguntar("TOP_MOVIES_WITH_GENDER_BIAS");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("TOP_MOVIES_WITH_GENDER_BIAS 2 2015");
+        assertEquals("Berserker:F:100\nButterfly:F:100\n",result.valor);
     }
 
     @Test
     public void testGetRecentTitleSameAvgVotesOneSharedActorQuery() {
-        QueryResult result = Main.perguntar("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR 673");
+        assertEquals("The Perks of Being a Wallflower||An Adventure in Space and Time||" +
+                "The Boy in the Striped Pyjamas||Pierrepoint: The Last Hangman",result.valor);
     }
 
     @Test
     public void testGetTopNYearsBestAvgVotesQuery() {
-        QueryResult result = Main.perguntar("GET_TOP_N_YEARS_BEST_AVG_VOTES");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("GET_TOP_N_YEARS_BEST_AVG_VOTES 2");
+        assertEquals("1902:6.9\n1901:6.6\n",result.valor);
     }
 
     @Test
     public void testGetTopNMoviesRatioQuery() {
-        QueryResult result = Main.perguntar("GET_TOP_N_MOVIES_RATIO");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("GET_TOP_N_MOVIES_RATIO 2 2005");
+        assertEquals("Cowboy del Amor:10.0\nGeorge Carlin: Life Is Worth Losing:8.1",result.valor);
     }
 
     @Test
     public void testGetTopActorYearQuery() {
-        QueryResult result = Main.perguntar("GET_TOP_ACTOR_YEAR");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("GET_TOP_ACTOR_YEAR 2000");
+        assertEquals("Michael Rapaport;8",result.valor);
     }
 
     @Test
     public void testInsertActorQuery() {
-        QueryResult result = Main.perguntar("INSERT_ACTOR");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("INSERT_ACTOR 555551;Filipe Silva;M;603");
+        assertEquals("OK",result.valor);
     }
 
     @Test
     public void testRemoveActorQuery() {
-        QueryResult result = Main.perguntar("REMOVE_ACTOR");
-        assertEquals("Mission: Impossible II (2000-05-24)",result.valor);
+        QueryResult result = Main.perguntar("REMOVE_ACTOR 12212");
+        assertEquals("OK",result.valor);
     }
 
     @Test
