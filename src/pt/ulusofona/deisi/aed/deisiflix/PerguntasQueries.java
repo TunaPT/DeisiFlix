@@ -495,6 +495,97 @@ public class PerguntasQueries {
         query = new QueryResult(output,finalTime-initialTime);
         return query;
     }
+
+    public static QueryResult getMovieWithActorBiggestBudget(String pergunta, QueryResult query) {
+        long initialTime = System.currentTimeMillis();
+        String[] partes = pergunta.split(" ");
+        String ano = partes[1].trim();
+        String primeiroNome = partes[2].trim();
+        String segundoNome = partes[3].trim();
+        String output = "";
+        boolean teste = false;
+        int orcamento = 0;
+        ArrayList<Integer> filmesDoAno = Main.actoresDiferentes.get(ano);
+        if (filmesDoAno != null){
+            for (int i = 0; i < filmesDoAno.size(); i++){
+                int idFilme = filmesDoAno.get(i);
+                ArrayList<Integer> todosAtores= Main.actoresDiferentes2.get(idFilme);
+                if (todosAtores != null){
+                    for (int k = 0; k < todosAtores.size(); k++){
+                        int idAtor = todosAtores.get(k);
+                        String nomeAtor2 = Main.getPersonNameById.get(idAtor);
+                        if (nomeAtor2 != null){
+                            if (nomeAtor2.equals(primeiroNome + " " + segundoNome)){
+                                teste = true;
+                                if (Main.orcamentoFilme.get(idFilme) > orcamento){
+                                    orcamento = Main.orcamentoFilme.get(idFilme);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (teste == true){
+            output = Integer.toString(orcamento);
+        }else {
+            output = ":(";
+        }
+        long finalTime = System.currentTimeMillis();
+        query = new QueryResult(output,finalTime-initialTime);
+        return query;
+    }
+
+    public static QueryResult getGenresByDirector(String pergunta, QueryResult query) {
+        long initialTime = System.currentTimeMillis();
+        String[] partes = pergunta.split(" ");
+        String primeiroNome = partes[1].trim();
+        String segundoNome = partes[2].trim();
+        String output = "";
+        boolean teste = false;
+        ArrayList<String> genresTotal = new ArrayList<>();
+        HashMap<String,Integer> genresByDirector = new HashMap<>();
+        if (Main.insertNomeDiretorGetID.get(primeiroNome+" "+segundoNome) == null){
+            output = "Erro";
+        }else {
+            int realizadorID = Main.insertNomeDiretorGetID.get(primeiroNome+" "+segundoNome);
+            ArrayList<Integer> filmesDoDiretor = Main.filmesDiretor.get(realizadorID);
+            for (int i = 0; i < filmesDoDiretor.size(); i++){
+                int idFilmeAtual = filmesDoDiretor.get(i);
+                ArrayList<Integer> idRealizadores = Main.insertIDFilmeGetIDDirector.get(idFilmeAtual);
+                if (idRealizadores != null){
+                    if (idRealizadores.contains(realizadorID)){
+                        ArrayList<String> genresFilme = Main.insertIDFilmeGetGenerosFilme.get(idFilmeAtual);
+                        if (genresFilme != null){
+                            for (int c = 0; c < genresFilme.size(); c++){
+                                String genreTest = genresFilme.get(c);
+                                if (!genresTotal.contains(genreTest)){
+                                    genresTotal.add(genreTest);
+                                }
+                            }
+                            for (int k = 0; k < genresFilme.size(); k++){
+                                String genreAtual = genresFilme.get(k);
+                                if (genresByDirector.get(genreAtual) == null){
+                                    genresByDirector.put(genreAtual,1);
+                                }else {
+                                    int repiticaoGenre = genresByDirector.get(genreAtual);
+                                    genresByDirector.put(genreAtual,repiticaoGenre+1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (int j = 0; j < genresTotal.size(); j++){
+                String genreTemp = genresTotal.get(j);
+                int repeticaoTotal = genresByDirector.get(genreTemp);
+                output += (genreTemp + ":" + repeticaoTotal+"\n");
+            }
+        }
+        long finalTime = System.currentTimeMillis();
+        query = new QueryResult(output,finalTime-initialTime);
+        return query;
+    }
 }
 
 //Algoritmos de Ordenação
