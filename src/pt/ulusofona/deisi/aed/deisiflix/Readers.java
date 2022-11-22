@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class Readers {
     public static ArrayList<String> readerDeisiPeople() throws IOException {
+        int countNomePessoa = 1;
         FileReader fr = new FileReader("deisi_people.txt");
         BufferedReader reader = new BufferedReader(fr);
         String linha = null;
@@ -21,102 +22,92 @@ public class Readers {
                 String NomePessoa = dados[2].trim();
                 String Género = dados[3].trim();
                 int IDFilme = Integer.parseInt(dados[4].trim());
-                ajuda(TipoPessoa,ID,NomePessoa,Género,IDFilme,countLinha);
+
+                if (TipoPessoa.equals("ACTOR")) {
+                    if (Main.filmesActor.get(ID) != null && Main.filmesActor.get(ID).contains(IDFilme)) {
+                        //Se o actor ja contem este id de filme, entra aqui
+                        Main.infoDuplicatedLines.add(countLinha + ":" + ID + ":" + IDFilme);
+                    }
+                }
+                if (Main.filmesActor.get(ID) == null) {
+                    ArrayList<Integer> arrayList = new ArrayList<>();
+                    arrayList.add(IDFilme);
+                    Main.filmesActor.put(ID,arrayList);
+                } else {
+                    ArrayList<Integer> arrayList = Main.filmesActor.get(ID);
+                    arrayList.add(IDFilme);
+                    Main.filmesActor.put(ID,arrayList);
+                }
+                DeisiPeople DeisiPeople = new DeisiPeople(TipoPessoa, ID, NomePessoa, Género, IDFilme);
+                if (TipoPessoa.equals("ACTOR")) {
+                    if (Main.dicionario.get(NomePessoa) != null ) {
+                        countNomePessoa = Main.dicionario.get(NomePessoa)+1;
+                    }
+                    Main.dicionario.put(NomePessoa,countNomePessoa);
+                    countNomePessoa = 1;
+                }
+                if (Main.filmesAno.get(NomePessoa) == null) {
+                    ArrayList<Integer> IDFilmesPessoa = new ArrayList<Integer>();
+                    IDFilmesPessoa.add(IDFilme);
+                    Main.filmesAno.put(NomePessoa,IDFilmesPessoa);
+                } else {
+                    ArrayList<Integer> IDFilmesPessoa = Main.filmesAno.get(NomePessoa);
+                    IDFilmesPessoa.add(IDFilme);
+                    Main.filmesAno.put(NomePessoa,IDFilmesPessoa);
+                }
+                if (TipoPessoa.equals("ACTOR")) {
+                    if (Main.actoresDiferentes2.get(IDFilme) == null) {
+                        ArrayList<Integer> IDsActores = new ArrayList<>();
+                        IDsActores.add(ID);
+                        Main.actoresDiferentes2.put(IDFilme, IDsActores);
+                    } else {
+                        ArrayList<Integer> IDsActores = Main.actoresDiferentes2.get(IDFilme);
+                        IDsActores.add(ID);
+                        Main.actoresDiferentes2.put(IDFilme, IDsActores);
+                    }
+                    //TOP_MOVIES_WITH_GENDER_BIAS
+                    if (Main.apenasActoresDeUmFilme.get(IDFilme) == null) {
+                        ArrayList<Integer> arrayList = new ArrayList<>();
+                        arrayList.add(ID);
+                        Main.apenasActoresDeUmFilme.put(IDFilme,arrayList);
+                    } else {
+                        ArrayList<Integer> arrayList = Main.apenasActoresDeUmFilme.get(IDFilme);
+                        arrayList.add(ID);
+                        Main.apenasActoresDeUmFilme.put(IDFilme,arrayList);
+                    }
+                    Main.insertIDActorGetGenero.put(ID, Género);
+                }
+                //GET_RECENT_TITLES_SAME_AVG_VOTES_ONE_SHARED_ACTOR
+                if (Main.actoresDeUmFilme.get(IDFilme) == null) {
+                    ArrayList<Integer> arrayList = new ArrayList<>();
+                    arrayList.add(ID);
+                    Main.actoresDeUmFilme.put(IDFilme,arrayList);
+                } else {
+                    ArrayList<Integer> arrayList = Main.actoresDeUmFilme.get(IDFilme);
+                    arrayList.add(ID);
+                    Main.actoresDeUmFilme.put(IDFilme,arrayList);
+                }
+                //GET_TOP_ACTOR_YEAR
+                Main.getPersonNameById.put(ID,NomePessoa);
+                //TOP_6_DIRECTORS_WITHIN_FAMILY
+                if (TipoPessoa.equals("DIRECTOR")) {
+                    if (Main.insertIDFilmeGetIDDirector.get(IDFilme) == null) {
+                        ArrayList<Integer> arrayList = new ArrayList<>();
+                        arrayList.add(ID);
+                        Main.insertIDFilmeGetIDDirector.put(IDFilme,arrayList);
+                    } else {
+                        ArrayList<Integer> arrayList = Main.insertIDFilmeGetIDDirector.get(IDFilme);
+                        arrayList.add(ID);
+                        Main.insertIDFilmeGetIDDirector.put(IDFilme,arrayList);
+                    }
+                    Main.insertDirectorIDGetName.put(ID,NomePessoa);
+                }
             } else {
                 linhasIgnoradas.add(linha);
             }
         }
         reader.close();
         return linhasIgnoradas;
-    }
-
-    public static void ajuda(String TipoPessoa,int ID,String NomePessoa,String Género,int IDFilme,int countLinha) {
-        int countNomePessoa = 1;
-        if (TipoPessoa.equals("ACTOR")) {
-            if (Main.filmesActor.get(ID) != null && Main.filmesActor.get(ID).contains(IDFilme)) {
-                Main.infoDuplicatedLines.add(countLinha + ":" + ID + ":" + IDFilme);
-            }
-        }
-        if (Main.filmesActor.get(ID) == null) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            arrayList.add(IDFilme);
-            Main.filmesActor.put(ID,arrayList);
-        } else {
-            ArrayList<Integer> arrayList = Main.filmesActor.get(ID);
-            arrayList.add(IDFilme);
-            Main.filmesActor.put(ID,arrayList);
-        }
-        if (Main.filmesDiretor.get(ID) == null) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            arrayList.add(IDFilme);
-            Main.filmesDiretor.put(ID,arrayList);
-        } else {
-            ArrayList<Integer> arrayList = Main.filmesDiretor.get(ID);
-            if (!arrayList.contains(IDFilme)){
-                arrayList.add(IDFilme);
-                Main.filmesDiretor.put(ID,arrayList);
-            }
-        }
-        if (TipoPessoa.equals("ACTOR")) {
-            if (Main.dicionario.get(NomePessoa) != null ) {
-                countNomePessoa = Main.dicionario.get(NomePessoa)+1;
-            }
-            Main.dicionario.put(NomePessoa,countNomePessoa);
-            countNomePessoa = 1;
-        }
-        if (Main.filmesAno.get(NomePessoa) == null) {
-            ArrayList<Integer> IDFilmesPessoa = new ArrayList<Integer>();
-            IDFilmesPessoa.add(IDFilme);
-            Main.filmesAno.put(NomePessoa,IDFilmesPessoa);
-        } else {
-            ArrayList<Integer> IDFilmesPessoa = Main.filmesAno.get(NomePessoa);
-            IDFilmesPessoa.add(IDFilme);
-            Main.filmesAno.put(NomePessoa,IDFilmesPessoa);
-        }
-        if (TipoPessoa.equals("ACTOR")) {
-            if (Main.actoresDiferentes2.get(IDFilme) == null) {
-                ArrayList<Integer> IDsActores = new ArrayList<>();
-                IDsActores.add(ID);
-                Main.actoresDiferentes2.put(IDFilme, IDsActores);
-            } else {
-                ArrayList<Integer> IDsActores = Main.actoresDiferentes2.get(IDFilme);
-                IDsActores.add(ID);
-                Main.actoresDiferentes2.put(IDFilme, IDsActores);
-            }
-            if (Main.apenasActoresDeUmFilme.get(IDFilme) == null) {
-                ArrayList<Integer> arrayList = new ArrayList<>();
-                arrayList.add(ID);
-                Main.apenasActoresDeUmFilme.put(IDFilme,arrayList);
-            } else {
-                ArrayList<Integer> arrayList = Main.apenasActoresDeUmFilme.get(IDFilme);
-                arrayList.add(ID);
-                Main.apenasActoresDeUmFilme.put(IDFilme,arrayList);
-            }
-            Main.insertIDActorGetGenero.put(ID, Género);
-        }
-        if (Main.actoresDeUmFilme.get(IDFilme) == null) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            arrayList.add(ID);
-            Main.actoresDeUmFilme.put(IDFilme,arrayList);
-        } else {
-            ArrayList<Integer> arrayList = Main.actoresDeUmFilme.get(IDFilme);
-            arrayList.add(ID);
-            Main.actoresDeUmFilme.put(IDFilme,arrayList);
-        }
-        Main.getPersonNameById.put(ID,NomePessoa);
-        if (TipoPessoa.equals("DIRECTOR")) {
-            if (Main.insertIDFilmeGetIDDirector.get(IDFilme) == null) {
-                ArrayList<Integer> arrayList = new ArrayList<>();
-                arrayList.add(ID);
-                Main.insertIDFilmeGetIDDirector.put(IDFilme,arrayList);
-            } else {
-                ArrayList<Integer> arrayList = Main.insertIDFilmeGetIDDirector.get(IDFilme);
-                arrayList.add(ID);
-                Main.insertIDFilmeGetIDDirector.put(IDFilme,arrayList);
-            }
-            Main.insertDirectorIDGetName.put(ID,NomePessoa);
-            Main.insertNomeDiretorGetID.put(NomePessoa,ID);
-        }
     }
 
     public static ArrayList<String> readerDeisiGenres() throws IOException {
@@ -239,7 +230,6 @@ public class Readers {
                 if (Main.idFilmeMediaVotos.get(ID) != null) {
                     mediaVotos = Main.idFilmeMediaVotos.get(ID);
                 }
-                Main.orcamentoFilme.put(ID,Orçamento);
 
                 Filme filme = new Filme();
                 filme.id = ID;

@@ -82,13 +82,6 @@ public class Main {
     //GET_DUPLICATE_LINES_YEAR
     static ArrayList<String> infoDuplicatedLines = new ArrayList<>();
 
-    //MAX_BUDGET_YEAR_ACTOR
-    static HashMap<Integer,Integer> orcamentoFilme = new HashMap<>();
-
-    //GET_GENRES_BY_DIRECTOR
-    static HashMap<String,Integer> insertNomeDiretorGetID = new HashMap<>();
-    static HashMap<Integer,ArrayList> filmesDiretor = new HashMap<>();
-
     static ArrayList<Filme> linhasVálidas = new ArrayList<Filme>();
     static ArrayList<String> linhasIgnoradas = new ArrayList<String>();
     static ArrayList<String> deisiPeople = new ArrayList<String>();
@@ -127,10 +120,6 @@ public class Main {
             query = PerguntasQueries.getDuplicateLinesYearFunction(pergunta,query);
         } else if (pergunta.contains("GET_TOP3_MOVIES_GENRE_YEAR")) {
             query = PerguntasQueries.getTop3MoviesGenreYearFunction(pergunta,query);
-        } else if (pergunta.contains("MAX_BUDGET_YEAR_ACTOR")) {
-            query = PerguntasQueries.getMovieWithActorBiggestBudget(pergunta,query);
-        } else if (pergunta.contains("GET_GENRES_BY_DIRECTOR")) {
-            query = PerguntasQueries.getGenresByDirector(pergunta,query);
         } else {
             query = null;
         }
@@ -165,9 +154,6 @@ public class Main {
         insertDirectorIDGetName = new HashMap<>();
         insertIDFilmeGetListGeneros = new HashMap<>();
         infoDuplicatedLines = new ArrayList<>();
-        orcamentoFilme = new HashMap<>();
-        filmesDiretor = new HashMap<>();
-        insertNomeDiretorGetID = new HashMap<>();
 
         //Leitura Readers
         deisiPeople = Readers.readerDeisiPeople();
